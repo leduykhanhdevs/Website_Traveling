@@ -29,6 +29,11 @@ export const InteractiveGlobe: React.FC<{
 }> = ({ onSelectCity, selectedCityId }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeCity, setActiveCity] = useState<Destination>(DESTINATIONS[0]);
+  const [hoveredCity, setHoveredCity] = useState<Destination | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const activeCityIdRef = useRef<string>(DESTINATIONS[0].id);
+  const updatePinHighlightsRef = useRef<((id: string) => void) | null>(null);
+
   const [userLocation, setUserLocation] = useState<UserLocation>({
     lat: 21.0285,
     lng: 105.8542,
@@ -69,6 +74,8 @@ export const InteractiveGlobe: React.FC<{
       const found = DESTINATIONS.find((d) => d.id === selectedCityId);
       if (found) {
         setActiveCity(found);
+        activeCityIdRef.current = found.id;
+        updatePinHighlightsRef.current?.(found.id);
         if (zoomControlsRef.current) {
           zoomControlsRef.current.focusLocation(found.lat, found.lng);
         }
@@ -154,6 +161,11 @@ export const InteractiveGlobe: React.FC<{
     // Globe Radius
     const GLOBE_RADIUS = 60;
     const globeGroup = new THREE.Group();
+    // Initialize orientation to focus directly on Vietnam & East Asia (Hà Nội)
+    const initialPhi = (activeCity.lat * Math.PI) / 180;
+    const initialTheta = ((activeCity.lng + 180) * Math.PI) / 180;
+    globeGroup.rotation.x = initialPhi;
+    globeGroup.rotation.y = -initialTheta + Math.PI / 2;
     scene.add(globeGroup);
 
     // 2. Texture Loader with LoadingManager for tracking progress & safe fallback
@@ -241,88 +253,235 @@ export const InteractiveGlobe: React.FC<{
     const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
     globeGroup.add(wireMesh);
 
-    // 3. User Geolocation Pinpoint & Radar Beacon
+    // 3. User Geolocation Pinpoint & High-Precision GPS Radar Beacon
     const userBeaconGroup = new THREE.Group();
     globeGroup.add(userBeaconGroup);
 
     const userPos = latLngToVector3(userLocation.lat, userLocation.lng, GLOBE_RADIUS);
+    const userNormal = userPos.clone().normalize();
+    userBeaconGroup.position.copy(userPos);
+    userBeaconGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), userNormal);
 
-    // Gold/Emerald Core Sphere Pin
-    const userPinGeo = new THREE.SphereGeometry(1.8, 24, 24);
-    const userPinMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981, // Emerald green
-    });
+    // Emerald Center Pin
+    const userPinGeo = new THREE.SphereGeometry(1.0, 20, 20);
+    const userPinMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
     const userPinMesh = new THREE.Mesh(userPinGeo, userPinMat);
-    userPinMesh.position.copy(userPos);
+    userPinMesh.position.set(0, 0.6, 0);
     userBeaconGroup.add(userPinMesh);
 
-    // Pulsing Radar Rings
-    const radarGeo1 = new THREE.RingGeometry(1.6, 2.5, 32);
+    // Refined Pulsing Radar Rings
+    const radarGeo1 = new THREE.RingGeometry(1.0, 1.6, 32);
+    radarGeo1.rotateX(-Math.PI / 2);
     const radarMat1 = new THREE.MeshBasicMaterial({
       color: 0x34d399,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.8,
     });
     const radarMesh1 = new THREE.Mesh(radarGeo1, radarMat1);
-    radarMesh1.position.copy(userPos.clone().multiplyScalar(1.006));
-    radarMesh1.lookAt(userPos.clone().multiplyScalar(2));
+    radarMesh1.position.set(0, 0.05, 0);
     userBeaconGroup.add(radarMesh1);
 
-    const radarGeo2 = new THREE.RingGeometry(2.4, 3.4, 32);
+    const radarGeo2 = new THREE.RingGeometry(1.4, 2.0, 32);
+    radarGeo2.rotateX(-Math.PI / 2);
     const radarMat2 = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0x10b981,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.6,
     });
     const radarMesh2 = new THREE.Mesh(radarGeo2, radarMat2);
-    radarMesh2.position.copy(userPos.clone().multiplyScalar(1.007));
-    radarMesh2.lookAt(userPos.clone().multiplyScalar(2));
+    radarMesh2.position.set(0, 0.06, 0);
     userBeaconGroup.add(radarMesh2);
 
-    // Luminous Altitude Beam pointing outward from user location
-    const beamCurve = new THREE.LineCurve3(
-      userPos,
-      userPos.clone().multiplyScalar(1.15)
-    );
-    const beamGeo = new THREE.TubeGeometry(beamCurve, 12, 0.4, 8, false);
+    // Luminous Altitude Laser Beam pointing outward
+    const beamGeo = new THREE.CylinderGeometry(0.12, 0.18, 6.0, 12);
+    beamGeo.translate(0, 3.0, 0);
     const beamMat = new THREE.MeshBasicMaterial({
       color: 0x34d399,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.7,
     });
     const beamMesh = new THREE.Mesh(beamGeo, beamMat);
     userBeaconGroup.add(beamMesh);
 
-    // 4. World City Marker Pins
+    // 4. World City Marker Pins (Luxury 3D Beacons with Reactive Color Switching)
+    interface CityPinItem {
+      dest: Destination;
+      rootGroup: THREE.Group;
+      pillarMesh: THREE.Mesh;
+      headMesh: THREE.Mesh;
+      baseRingMesh: THREE.Mesh;
+      pulseRingMesh: THREE.Mesh;
+      gyroMesh: THREE.Mesh;
+      pillarMat: THREE.MeshBasicMaterial;
+      headMat: THREE.MeshBasicMaterial;
+      baseRingMat: THREE.MeshBasicMaterial;
+      pulseRingMat: THREE.MeshBasicMaterial;
+      gyroMat: THREE.MeshBasicMaterial;
+      hitMesh: THREE.Mesh;
+    }
+
     const pinGroup = new THREE.Group();
     globeGroup.add(pinGroup);
 
-    const cityPinGeo = new THREE.SphereGeometry(1.0, 16, 16);
+    const cityPinsList: CityPinItem[] = [];
+    const clickTargets: THREE.Object3D[] = [];
+
+    // Shared geometries for optimal memory
+    const baseRingGeo = new THREE.RingGeometry(0.8, 1.4, 32);
+    baseRingGeo.rotateX(-Math.PI / 2);
+
+    const pulseRingGeo = new THREE.RingGeometry(1.0, 1.9, 32);
+    pulseRingGeo.rotateX(-Math.PI / 2);
+
+    const pillarGeo = new THREE.CylinderGeometry(0.12, 0.22, 3.2, 16);
+    pillarGeo.translate(0, 1.6, 0);
+
+    const headGeo = new THREE.SphereGeometry(0.75, 18, 18);
+
+    const gyroGeo = new THREE.TorusGeometry(1.25, 0.08, 10, 28);
+
+    const centerDotGeo = new THREE.SphereGeometry(0.35, 12, 12);
+    const centerDotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+    const hitGeo = new THREE.SphereGeometry(3.8, 8, 8);
+    const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+
     DESTINATIONS.forEach((dest) => {
       const pos = latLngToVector3(dest.lat, dest.lng, GLOBE_RADIUS);
+      const normal = pos.clone().normalize();
 
-      const pinMat = new THREE.MeshBasicMaterial({
-        color: dest.id === activeCity.id ? 0x38bdf8 : 0x818cf8,
-      });
-      const pin = new THREE.Mesh(cityPinGeo, pinMat);
-      pin.position.copy(pos);
-      pinGroup.add(pin);
+      const rootGroup = new THREE.Group();
+      rootGroup.position.copy(pos);
+      rootGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+      pinGroup.add(rootGroup);
 
-      // Subtle city ring
-      const ringGeo = new THREE.RingGeometry(1.2, 1.8, 20);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
+      const isSelected = dest.id === activeCityIdRef.current;
+
+      // Base ground ring
+      const baseRingMat = new THREE.MeshBasicMaterial({
+        color: isSelected ? 0xfbbf24 : 0x38bdf8,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.5,
+        opacity: isSelected ? 0.95 : 0.6,
       });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.position.copy(pos.clone().multiplyScalar(1.004));
-      ring.lookAt(pos.clone().multiplyScalar(2));
-      pinGroup.add(ring);
+      const baseRingMesh = new THREE.Mesh(baseRingGeo, baseRingMat);
+      baseRingMesh.position.set(0, 0.04, 0);
+      rootGroup.add(baseRingMesh);
+
+      // Radar pulse ring (active on selected city)
+      const pulseRingMat = new THREE.MeshBasicMaterial({
+        color: 0xfbbf24,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.85,
+      });
+      const pulseRingMesh = new THREE.Mesh(pulseRingGeo, pulseRingMat);
+      pulseRingMesh.position.set(0, 0.06, 0);
+      pulseRingMesh.visible = isSelected;
+      rootGroup.add(pulseRingMesh);
+
+      // Vertical 3D Light Pillar
+      const pillarMat = new THREE.MeshBasicMaterial({
+        color: isSelected ? 0xfbbf24 : 0x38bdf8,
+        transparent: true,
+        opacity: isSelected ? 0.95 : 0.7,
+      });
+      const pillarMesh = new THREE.Mesh(pillarGeo, pillarMat);
+      if (isSelected) {
+        pillarMesh.scale.set(1.4, 1.65, 1.4);
+      }
+      rootGroup.add(pillarMesh);
+
+      // Floating Gem Star at tip of pillar
+      const headMat = new THREE.MeshBasicMaterial({
+        color: isSelected ? 0xfffbeb : 0x38bdf8,
+      });
+      const headMesh = new THREE.Mesh(headGeo, headMat);
+      headMesh.position.set(0, isSelected ? 3.2 * 1.65 : 3.2, 0);
+      if (isSelected) {
+        headMesh.scale.set(1.4, 1.4, 1.4);
+      }
+      rootGroup.add(headMesh);
+
+      // Orbital Gyro Ring around the gem
+      const gyroMat = new THREE.MeshBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.85,
+      });
+      const gyroMesh = new THREE.Mesh(gyroGeo, gyroMat);
+      gyroMesh.position.set(0, isSelected ? 3.2 * 1.65 : 3.2, 0);
+      gyroMesh.rotation.x = 0.45;
+      gyroMesh.visible = isSelected;
+      rootGroup.add(gyroMesh);
+
+      // Center Ground Dot
+      const centerDot = new THREE.Mesh(centerDotGeo, centerDotMat);
+      centerDot.position.set(0, 0.15, 0);
+      rootGroup.add(centerDot);
+
+      // Raycaster hit target for clicking
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.position.set(0, 2.0, 0);
+      hitMesh.userData = { destId: dest.id, dest };
+      rootGroup.add(hitMesh);
+      clickTargets.push(hitMesh);
+
+      cityPinsList.push({
+        dest,
+        rootGroup,
+        pillarMesh,
+        headMesh,
+        baseRingMesh,
+        pulseRingMesh,
+        gyroMesh,
+        pillarMat,
+        headMat,
+        baseRingMat,
+        pulseRingMat,
+        gyroMat,
+        hitMesh,
+      });
     });
+
+    // Reactive Pin Highlighting: When city changes, instantly change colors and beacon scale
+    const updatePinHighlights = (activeId: string) => {
+      activeCityIdRef.current = activeId;
+      cityPinsList.forEach((item) => {
+        const isSelected = item.dest.id === activeId;
+        if (isSelected) {
+          // Radiant Golden Amber
+          item.headMat.color.setHex(0xfffbeb);
+          item.pillarMat.color.setHex(0xfbbf24);
+          item.baseRingMat.color.setHex(0xfbbf24);
+          item.pulseRingMat.color.setHex(0xfbbf24);
+          item.pillarMat.opacity = 0.95;
+          item.baseRingMat.opacity = 0.95;
+          item.pillarMesh.scale.set(1.4, 1.65, 1.4);
+          item.headMesh.position.y = 3.2 * 1.65;
+          item.headMesh.scale.set(1.4, 1.4, 1.4);
+          item.gyroMesh.position.y = 3.2 * 1.65;
+          item.pulseRingMesh.visible = true;
+          item.gyroMesh.visible = true;
+        } else {
+          // Sleek Electric Cyan
+          item.headMat.color.setHex(0x38bdf8);
+          item.pillarMat.color.setHex(0x38bdf8);
+          item.baseRingMat.color.setHex(0x38bdf8);
+          item.pillarMat.opacity = 0.7;
+          item.baseRingMat.opacity = 0.6;
+          item.pillarMesh.scale.set(1.0, 1.0, 1.0);
+          item.headMesh.position.y = 3.2;
+          item.headMesh.scale.set(1.0, 1.0, 1.0);
+          item.pulseRingMesh.visible = false;
+          item.gyroMesh.visible = false;
+        }
+      });
+    };
+    updatePinHighlightsRef.current = updatePinHighlights;
+    updatePinHighlights(activeCityIdRef.current);
 
     // 5. Global Flight Trajectory Arcs
     const flightPairs: [string, string][] = [
@@ -378,12 +537,18 @@ export const InteractiveGlobe: React.FC<{
     nightFillLight.position.set(-150, -60, -100);
     scene.add(nightFillLight);
 
-    // 7. Mouse Drag & Touch Orbit Rotation with Momentum
+    // 7. Mouse Drag, Touch Orbit Rotation & 3D Pin Interaction (Raycasting)
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
+    let clickStartX = 0;
+    let clickStartY = 0;
     let rotationVelocityX = 0;
     let rotationVelocityY = 0;
+
+    // Raycaster for hovering and clicking 3D pins directly on the globe
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
     // Programmatic target rotation for smooth focus transitions
     let targetRotationX: number | null = null;
@@ -395,10 +560,32 @@ export const InteractiveGlobe: React.FC<{
       targetRotationY = null;
       prevMouseX = e.clientX;
       prevMouseY = e.clientY;
+      clickStartX = e.clientX;
+      clickStartY = e.clientY;
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
+      if (!isDragging) {
+        // Raycast hover check over 3D city pins
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(clickTargets, false);
+        if (intersects.length > 0) {
+          const hit = intersects[0].object;
+          const dest = hit.userData.dest as Destination;
+          renderer.domElement.style.cursor = 'pointer';
+          setHoveredCity(dest);
+          setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        } else {
+          renderer.domElement.style.cursor = 'grab';
+          setHoveredCity(null);
+        }
+        return;
+      }
+
+      setHoveredCity(null);
       const deltaX = e.clientX - prevMouseX;
       const deltaY = e.clientY - prevMouseY;
       prevMouseX = e.clientX;
@@ -414,8 +601,28 @@ export const InteractiveGlobe: React.FC<{
       globeGroup.rotation.x = THREE.MathUtils.clamp(globeGroup.rotation.x, -Math.PI / 2.3, Math.PI / 2.3);
     };
 
-    const onMouseUp = () => {
+    const onMouseUp = (e: MouseEvent) => {
       isDragging = false;
+      const dist = Math.hypot(e.clientX - clickStartX, e.clientY - clickStartY);
+      if (dist < 6) {
+        // Direct click on canvas - check raycast for city pin
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(clickTargets, false);
+        if (intersects.length > 0) {
+          const hit = intersects[0].object;
+          const dest = hit.userData.dest as Destination;
+          if (dest) {
+            setActiveCity(dest);
+            activeCityIdRef.current = dest.id;
+            updatePinHighlights(dest.id);
+            if (onSelectCity) onSelectCity(dest);
+            focusLocation(dest.lat, dest.lng);
+          }
+        }
+      }
     };
 
     // Touch support (1 finger drag, 2 fingers pinch to zoom)
@@ -428,6 +635,8 @@ export const InteractiveGlobe: React.FC<{
         targetRotationY = null;
         prevMouseX = e.touches[0].clientX;
         prevMouseY = e.touches[0].clientY;
+        clickStartX = e.touches[0].clientX;
+        clickStartY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
         isDragging = false;
         initialPinchDistance = Math.hypot(
@@ -454,7 +663,7 @@ export const InteractiveGlobe: React.FC<{
         );
         const diff = initialPinchDistance - currentDistance;
         targetCameraDistance = THREE.MathUtils.clamp(
-          targetCameraDistance + diff * 0.2,
+          targetCameraDistance + diff * 0.15,
           MIN_DISTANCE,
           MAX_DISTANCE
         );
@@ -462,24 +671,48 @@ export const InteractiveGlobe: React.FC<{
       }
     };
 
-    const onTouchEnd = () => {
+    const onTouchEnd = (e: TouchEvent) => {
+      if (isDragging && e.changedTouches.length === 1) {
+        const touch = e.changedTouches[0];
+        const dist = Math.hypot(touch.clientX - clickStartX, touch.clientY - clickStartY);
+        if (dist < 8) {
+          const rect = renderer.domElement.getBoundingClientRect();
+          mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const intersects = raycaster.intersectObjects(clickTargets, false);
+          if (intersects.length > 0) {
+            const hit = intersects[0].object;
+            const dest = hit.userData.dest as Destination;
+            if (dest) {
+              setActiveCity(dest);
+              activeCityIdRef.current = dest.id;
+              updatePinHighlights(dest.id);
+              if (onSelectCity) onSelectCity(dest);
+              focusLocation(dest.lat, dest.lng);
+            }
+          }
+        }
+      }
       isDragging = false;
       initialPinchDistance = 0;
     };
 
-    // Wheel Zoom listener with intentional modifier check (Ctrl / Meta)
+    // Wheel zoom with Ctrl/Meta key modifier
     const onWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        targetCameraDistance = THREE.MathUtils.clamp(
-          targetCameraDistance + e.deltaY * 0.12,
-          MIN_DISTANCE,
-          MAX_DISTANCE
-        );
-      } else {
-        // Normal scroll: do NOT call e.preventDefault(), allowing standard webpage scrolling
+      const hasModifier = e.ctrlKey || e.metaKey;
+      if (!hasModifier) {
         triggerScrollHint();
+        return;
       }
+
+      e.preventDefault();
+      const zoomStep = e.deltaY * 0.08;
+      targetCameraDistance = THREE.MathUtils.clamp(
+        targetCameraDistance + zoomStep,
+        MIN_DISTANCE,
+        MAX_DISTANCE
+      );
     };
 
     container.addEventListener('mousedown', onMouseDown);
@@ -490,29 +723,27 @@ export const InteractiveGlobe: React.FC<{
     window.addEventListener('touchend', onTouchEnd);
     container.addEventListener('wheel', onWheel, { passive: false });
 
-    // Window Resize Handler
+    // Window Resize Responsive Handler
     const handleResize = () => {
       if (!container) return;
-      const newWidth = container.clientWidth;
-      const newHeight = container.clientHeight || 620;
-      camera.aspect = newWidth / newHeight;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
+      renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
 
-    // Focus function to rotate globe towards specific lat/lng
+    // Focus Location Helper (Smooth camera angle to center on city lat/lng)
     const focusLocation = (lat: number, lng: number) => {
-      targetRotationX = (lat * Math.PI) / 180;
-      targetRotationY = -((lng + 90) * Math.PI) / 180;
-      targetCameraDistance = 125; // Zoom in slightly on focus
+      const phi = lat * (Math.PI / 180);
+      const theta = (lng + 180) * (Math.PI / 180);
+
+      targetRotationX = phi;
+      targetRotationY = -theta + Math.PI / 2;
+      targetCameraDistance = Math.min(targetCameraDistance, 140);
     };
 
-    // Initial orientation focusing on Vietnam & East Asia
-    globeGroup.rotation.x = 0.25;
-    globeGroup.rotation.y = -3.4;
-
-    // Provide controls via ref to UI buttons
     zoomControlsRef.current = {
       zoomIn: () => {
         targetCameraDistance = Math.max(MIN_DISTANCE, targetCameraDistance - 25);
@@ -522,8 +753,7 @@ export const InteractiveGlobe: React.FC<{
       },
       resetView: () => {
         targetCameraDistance = DEFAULT_DISTANCE;
-        targetRotationX = 0.25;
-        targetRotationY = -3.4;
+        focusLocation(activeCity.lat, activeCity.lng);
       },
       focusLocation,
     };
@@ -576,14 +806,31 @@ export const InteractiveGlobe: React.FC<{
       // Clouds rotation at subtle independent rate
       cloudsMesh.rotation.y += 0.0006;
 
-      // Radar Wave Pulse on User Location
+      // Active City Pin Radar Wave & Gyro Animation
+      const activePin = cityPinsList.find((p) => p.dest.id === activeCityIdRef.current);
+      if (activePin) {
+        const pulseLoop = (elapsedTime * 1.8) % 1;
+        const pulseScale = 1.0 + pulseLoop * 2.2;
+        activePin.pulseRingMesh.scale.set(pulseScale, pulseScale, 1);
+        activePin.pulseRingMat.opacity = Math.max(0, 0.9 * (1 - pulseLoop));
+
+        // Rotate the orbital gyro ring around the pin
+        activePin.gyroMesh.rotation.z += 0.035;
+        activePin.gyroMesh.rotation.y += 0.02;
+
+        // Gentle breathing on the golden head
+        const breath = 1.35 + Math.sin(elapsedTime * 4.5) * 0.12;
+        activePin.headMesh.scale.set(breath, breath, breath);
+      }
+
+      // Radar Wave Pulse on User Location (Refined GPS)
       const pulseProgress1 = (elapsedTime * 1.6) % 1;
-      radarMesh1.scale.setScalar(1 + pulseProgress1 * 1.8);
-      radarMat1.opacity = Math.max(0, 1 - pulseProgress1);
+      radarMesh1.scale.setScalar(1 + pulseProgress1 * 1.5);
+      radarMat1.opacity = Math.max(0, 0.8 * (1 - pulseProgress1));
 
       const pulseProgress2 = ((elapsedTime * 1.6) + 0.5) % 1;
-      radarMesh2.scale.setScalar(1 + pulseProgress2 * 2.2);
-      radarMat2.opacity = Math.max(0, (1 - pulseProgress2) * 0.8);
+      radarMesh2.scale.setScalar(1 + pulseProgress2 * 1.8);
+      radarMat2.opacity = Math.max(0, 0.6 * (1 - pulseProgress2));
 
       // Subtle atmospheric halo breathing
       atmosphereMesh.scale.setScalar(1.0 + Math.sin(elapsedTime * 2) * 0.006);
@@ -629,7 +876,24 @@ export const InteractiveGlobe: React.FC<{
       radarMat2.dispose();
       beamGeo.dispose();
       beamMat.dispose();
-      cityPinGeo.dispose();
+
+      baseRingGeo.dispose();
+      pulseRingGeo.dispose();
+      pillarGeo.dispose();
+      headGeo.dispose();
+      gyroGeo.dispose();
+      centerDotGeo.dispose();
+      centerDotMat.dispose();
+      hitGeo.dispose();
+      hitMat.dispose();
+      cityPinsList.forEach((item) => {
+        item.pillarMat.dispose();
+        item.headMat.dispose();
+        item.baseRingMat.dispose();
+        item.pulseRingMat.dispose();
+        item.gyroMat.dispose();
+      });
+
       renderer.dispose();
     };
   }, [userLocation]);
@@ -752,6 +1016,17 @@ export const InteractiveGlobe: React.FC<{
         title={`Kéo chuột để xoay quả cầu 3D, giữ ${isMac ? '⌘' : 'Ctrl'} + cuộn chuột để phóng to/thu nhỏ`}
       />
 
+      {/* 3D Pin Hover Tooltip Badge */}
+      {hoveredCity && (
+        <div
+          style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y - 42}px` }}
+          className="absolute z-30 pointer-events-none -translate-x-1/2 px-3 py-1.5 rounded-xl bg-slate-950/90 backdrop-blur-md border border-primary/50 text-xs font-semibold text-white shadow-xl flex items-center gap-1.5 animate-fade-in"
+        >
+          <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+          <span>{hoveredCity.name}, {hoveredCity.country}</span>
+        </div>
+      )}
+
       {/* Top Left HUD: Status & User Geolocation Pinpoint */}
       <div className="absolute top-5 left-5 right-5 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
         <div className="flex flex-wrap items-center gap-2.5">
@@ -862,11 +1137,13 @@ export const InteractiveGlobe: React.FC<{
 
           {/* Quick City Pill Chips with smooth zero scrollbar */}
           <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 md:pb-0 scrollbar-none no-scrollbar">
-            {DESTINATIONS.slice(0, 8).map((city) => (
+            {DESTINATIONS.map((city) => (
               <button
                 key={city.id}
                 onClick={() => {
                   setActiveCity(city);
+                  activeCityIdRef.current = city.id;
+                  updatePinHighlightsRef.current?.(city.id);
                   if (onSelectCity) onSelectCity(city);
                   if (zoomControlsRef.current) {
                     zoomControlsRef.current.focusLocation(city.lat, city.lng);
@@ -874,7 +1151,7 @@ export const InteractiveGlobe: React.FC<{
                 }}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                   activeCity.id === city.id
-                    ? 'bg-primary text-slate-950 font-bold shadow-lg shadow-primary/25'
+                    ? 'bg-primary text-slate-950 font-bold shadow-lg shadow-primary/25 ring-2 ring-primary/40'
                     : 'bg-surface-light text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
               >

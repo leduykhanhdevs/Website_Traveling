@@ -74,19 +74,30 @@ export function App() {
           });
         }
 
+        // Exclude globe and destinations sections from generic card stagger to prevent stuck transforms
+        if (section.id === 'globe' || section.id === 'destinations') {
+          return;
+        }
+
         const cards = section.querySelectorAll('.glass-card');
         if (cards.length > 0) {
-          gsap.from(cards, {
-            y: 24,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 85%',
-              once: true,
-            },
-          });
+          gsap.fromTo(
+            cards,
+            { y: 20, opacity: 0.5 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.5,
+              stagger: 0.06,
+              ease: 'power2.out',
+              clearProps: 'all',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 85%',
+                once: true,
+              },
+            }
+          );
         }
       });
     }, mainRef);

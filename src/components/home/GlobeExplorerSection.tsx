@@ -42,55 +42,63 @@ export const GlobeExplorerSection: React.FC = () => {
         </div>
 
         {/* Global Telemetry Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card p-5 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary" aria-hidden="true">
-                <Globe className="w-4 h-4" />
+        <div id="globe-telemetry" className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
+          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-primary/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0" aria-hidden="true">
+                  <Globe className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-semibold text-slate-300">Độ Phủ Toàn Cầu</h3>
               </div>
-              <h3 className="text-xs font-medium text-slate-400">Độ Phủ Toàn Cầu</h3>
+              <p className="text-2xl font-black text-white tracking-tight">
+                <AnimatedCounter end={50} suffix="+ Quốc Gia" />
+              </p>
             </div>
-            <p className="text-2xl font-black text-white">
-              <AnimatedCounter end={50} suffix="+ Quốc Gia" />
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Dữ liệu địa lý chuẩn hóa</p>
+            <p className="text-[11px] text-slate-400 mt-2">Dữ liệu địa lý chuẩn hóa</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-400" aria-hidden="true">
-                <Plane className="w-4 h-4" />
+          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-emerald-500/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-400 flex-shrink-0" aria-hidden="true">
+                  <Plane className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-semibold text-slate-300">Tuyến Bay Quốc Tế</h3>
               </div>
-              <h3 className="text-xs font-medium text-slate-400">Tuyến Bay Quốc Tế</h3>
+              <p className="text-2xl font-black text-white tracking-tight">
+                <AnimatedCounter end={100} suffix="% Khép Kín" />
+              </p>
             </div>
-            <p className="text-2xl font-black text-white">
-              <AnimatedCounter end={100} suffix="% Khép Kín" />
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Tối ưu thời gian quá cảnh</p>
+            <p className="text-[11px] text-slate-400 mt-2">Tối ưu thời gian quá cảnh</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-400/10 flex items-center justify-center text-indigo-400" aria-hidden="true">
-                <Zap className="w-4 h-4" />
+          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-indigo-500/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-400/10 flex items-center justify-center text-indigo-400 flex-shrink-0" aria-hidden="true">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-semibold text-slate-300">Tốc Độ Phản Hồi</h3>
               </div>
-              <h3 className="text-xs font-medium text-slate-400">Tốc Độ Phản Hồi Hệ Thống</h3>
+              <p className="text-2xl font-black text-white tracking-tight">
+                <AnimatedCounter end={1.2} decimals={1} prefix="< " suffix=" Giây" />
+              </p>
             </div>
-            <p className="text-2xl font-black text-white">
-              <AnimatedCounter end={1.2} decimals={1} prefix="< " suffix=" Giây" />
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Lập lộ trình tức thì</p>
+            <p className="text-[11px] text-slate-400 mt-2">Lập lộ trình tức thì</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400" aria-hidden="true">
-                <ShieldCheck className="w-4 h-4" />
+          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-amber-500/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <div className="w-8 h-8 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400 flex-shrink-0" aria-hidden="true">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-semibold text-slate-300">Bảo Mật Người Dùng</h3>
               </div>
-              <h3 className="text-xs font-medium text-slate-400">Bảo Mật Người Dùng</h3>
+              <p className="text-2xl font-black text-white tracking-tight">Chuẩn Clerk Auth</p>
             </div>
-            <p className="text-2xl font-black text-white">Chuẩn Clerk Auth</p>
-            <p className="text-[11px] text-slate-400 mt-1">Mã hóa dữ liệu đầu cuối</p>
+            <p className="text-[11px] text-slate-400 mt-2">Mã hóa dữ liệu đầu cuối</p>
           </div>
         </div>
       </div>

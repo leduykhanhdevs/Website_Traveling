@@ -48,5 +48,5 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-Sitemap: https://websitetraveling.vercel.app/sitemap.xml
-Host: https://websitetraveling.vercel.app
+Sitemap: https://travelingvn.vercel.app/sitemap.xml
+Host: https://travelingvn.vercel.app

@@ -19,6 +19,19 @@ export const DestinationCarousel: React.FC<{
   const dragDistanceRef = useRef<number>(0);
   const hasDraggedRef = useRef<boolean>(false);
 
+  // Region tabs carousel scroll refs
+  const regionTabsRef = useRef<HTMLDivElement>(null);
+  const regionButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const scrollRegionTabs = (direction: 'left' | 'right') => {
+    if (!regionTabsRef.current) return;
+    const scrollAmount = 180;
+    regionTabsRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
+
   // Responsive cards per view (1 on mobile, 2 on tablet, 3 on desktop)
   const [cardsPerView, setCardsPerView] = useState<number>(() => {
     if (typeof window === 'undefined') return 3;
@@ -77,6 +90,13 @@ export const DestinationCarousel: React.FC<{
   const handleSelectRegion = (region: string) => {
     setSelectedRegion(region);
     setCurrentIndex(0);
+    if (regionButtonRefs.current[region]) {
+      regionButtonRefs.current[region]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
   };
 
   // Auto-play timer with infinite loop
@@ -174,8 +194,8 @@ export const DestinationCarousel: React.FC<{
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-6">
+          <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary mb-4">
               <Compass className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Điểm Đến Hấp Dẫn Toàn Cầu</span>
@@ -186,36 +206,59 @@ export const DestinationCarousel: React.FC<{
             >
               Khám Phá Các Tọa Độ Du Lịch Nổi Tiếng
             </h2>
-            <p className="mt-3 text-base text-slate-400 max-w-2xl">
+            <p className="mt-3 text-base text-slate-400">
               Từ những đô thị phồn hoa ngập ánh đèn đến những bờ biển nhiệt đới thơ mộng: được tuyển chọn và tối ưu hóa cho mọi phong cách trải nghiệm.
             </p>
           </div>
 
-          {/* Region Tabs: Clean, zero-scrollbar filter bar */}
-          <div
-            role="tablist"
-            aria-label="Bộ lọc vùng miền du lịch"
-            className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none no-scrollbar"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {regions.map((region) => {
-              const isSelected = selectedRegion === region;
-              return (
-                <button
-                  key={region}
-                  role="tab"
-                  aria-selected={isSelected}
-                  onClick={() => handleSelectRegion(region)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
-                    isSelected
-                      ? 'bg-primary text-slate-950 shadow-md shadow-primary/25 font-bold'
-                      : 'bg-surface text-slate-400 hover:text-white hover:bg-slate-800 border border-border-subtle'
-                  }`}
-                >
-                  {region}
-                </button>
-              );
-            })}
+          {/* Region Tabs: Smooth Carousel with Left & Right Navigation Buttons */}
+          <div className="flex items-center gap-1.5 max-w-full shrink-0">
+            <button
+              type="button"
+              onClick={() => scrollRegionTabs('left')}
+              aria-label="Xem danh mục vùng miền trước"
+              className="w-8 h-8 rounded-full bg-surface-light hover:bg-slate-800 border border-border-subtle hover:border-primary/40 text-slate-300 hover:text-white flex items-center justify-center shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none shadow-md cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+            </button>
+
+            <div
+              ref={regionTabsRef}
+              role="tablist"
+              aria-label="Bộ lọc vùng miền du lịch"
+              className="flex items-center gap-2 overflow-x-auto scrollbar-none no-scrollbar scroll-smooth py-1 px-1"
+            >
+              {regions.map((region) => {
+                const isSelected = selectedRegion === region;
+                return (
+                  <button
+                    key={region}
+                    ref={(el) => {
+                      regionButtonRefs.current[region] = el;
+                    }}
+                    role="tab"
+                    aria-selected={isSelected}
+                    onClick={() => handleSelectRegion(region)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+                      isSelected
+                        ? 'bg-primary text-slate-950 shadow-md shadow-primary/25 font-bold ring-2 ring-primary/40'
+                        : 'bg-surface text-slate-300 hover:text-white hover:bg-slate-800 border border-border-subtle'
+                    }`}
+                  >
+                    {region}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => scrollRegionTabs('right')}
+              aria-label="Xem danh mục vùng miền tiếp theo"
+              className="w-8 h-8 rounded-full bg-surface-light hover:bg-slate-800 border border-border-subtle hover:border-primary/40 text-slate-300 hover:text-white flex items-center justify-center shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none shadow-md cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </button>
           </div>
         </div>
 

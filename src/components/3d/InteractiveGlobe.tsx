@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { DESTINATIONS } from '../../data/destinations';
 import { Destination } from '../../types';
-import { Compass, ZoomIn, ZoomOut, RotateCcw, Crosshair, MapPin, Navigation } from 'lucide-react';
+import { Compass, ZoomIn, ZoomOut, RotateCcw, Crosshair, MapPin, Navigation, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Convert lat/lng to 3D sphere coordinate
 function latLngToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
@@ -49,6 +49,29 @@ export const InteractiveGlobe: React.FC<{
   const scrollHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/i.test(navigator.platform || '');
+
+  // City selection carousel refs and controls
+  const cityCarouselRef = useRef<HTMLDivElement>(null);
+  const cityButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const scrollCityCarousel = (direction: 'left' | 'right') => {
+    if (!cityCarouselRef.current) return;
+    const scrollAmount = 240;
+    cityCarouselRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    if (activeCity && cityButtonRefs.current[activeCity.id]) {
+      cityButtonRefs.current[activeCity.id]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [activeCity]);
 
   const triggerScrollHint = useCallback(() => {
     setShowScrollHint(true);
@@ -1110,24 +1133,24 @@ export const InteractiveGlobe: React.FC<{
 
       {/* City Quick Selection Strip at Bottom */}
       <div className="absolute bottom-5 left-5 right-5 bg-surface/90 backdrop-blur-xl border border-border-subtle rounded-2xl p-4 transition-all shadow-2xl">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 shrink-0 max-w-full lg:max-w-md">
             <img
               src={activeCity.image}
               alt={activeCity.name}
               className="w-16 h-16 rounded-xl object-cover border border-primary/30 flex-shrink-0"
             />
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h4 className="text-lg font-bold text-white">{activeCity.name}</h4>
-                <span className="text-xs text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+                <h4 className="text-lg font-bold text-white truncate">{activeCity.name}</h4>
+                <span className="text-xs text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 shrink-0">
                   {activeCity.country}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1 max-w-md line-clamp-1">
                 {activeCity.description}
               </p>
-              <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1.5">
+              <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1.5 flex-wrap">
                 <span>Thời điểm lý tưởng: <strong className="text-slate-200">{activeCity.bestTime}</strong></span>
                 <span>•</span>
                 <span>Ngân sách TB: <strong className="text-emerald-400">{activeCity.avgBudgetPerDay}</strong></span>
@@ -1135,29 +1158,55 @@ export const InteractiveGlobe: React.FC<{
             </div>
           </div>
 
-          {/* Quick City Pill Chips with smooth zero scrollbar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 md:pb-0 scrollbar-none no-scrollbar">
-            {DESTINATIONS.map((city) => (
-              <button
-                key={city.id}
-                onClick={() => {
-                  setActiveCity(city);
-                  activeCityIdRef.current = city.id;
-                  updatePinHighlightsRef.current?.(city.id);
-                  if (onSelectCity) onSelectCity(city);
-                  if (zoomControlsRef.current) {
-                    zoomControlsRef.current.focusLocation(city.lat, city.lng);
-                  }
-                }}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-                  activeCity.id === city.id
-                    ? 'bg-primary text-slate-950 font-bold shadow-lg shadow-primary/25 ring-2 ring-primary/40'
-                    : 'bg-surface-light text-slate-300 hover:text-white hover:bg-slate-800'
-                }`}
-              >
-                {city.name}
-              </button>
-            ))}
+          {/* Quick City Carousel with Left & Right Navigation Buttons */}
+          <div className="flex items-center gap-1.5 w-full lg:w-auto lg:max-w-[55%] xl:max-w-[60%] shrink-0">
+            <button
+              type="button"
+              onClick={() => scrollCityCarousel('left')}
+              aria-label="Xem các điểm đến trước"
+              className="w-8 h-8 rounded-full bg-surface-light hover:bg-slate-800 border border-border-subtle hover:border-primary/40 text-slate-300 hover:text-white flex items-center justify-center shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none shadow-md cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+            </button>
+
+            <div
+              ref={cityCarouselRef}
+              className="flex items-center gap-1.5 overflow-x-auto scrollbar-none no-scrollbar scroll-smooth py-1 px-1 flex-1"
+            >
+              {DESTINATIONS.map((city) => (
+                <button
+                  key={city.id}
+                  ref={(el) => {
+                    cityButtonRefs.current[city.id] = el;
+                  }}
+                  onClick={() => {
+                    setActiveCity(city);
+                    activeCityIdRef.current = city.id;
+                    updatePinHighlightsRef.current?.(city.id);
+                    if (onSelectCity) onSelectCity(city);
+                    if (zoomControlsRef.current) {
+                      zoomControlsRef.current.focusLocation(city.lat, city.lng);
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                    activeCity.id === city.id
+                      ? 'bg-primary text-slate-950 font-bold shadow-lg shadow-primary/25 ring-2 ring-primary/40'
+                      : 'bg-surface-light text-slate-300 hover:text-white hover:bg-slate-800 border border-border-subtle'
+                  }`}
+                >
+                  {city.name}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => scrollCityCarousel('right')}
+              aria-label="Xem các điểm đến tiếp theo"
+              className="w-8 h-8 rounded-full bg-surface-light hover:bg-slate-800 border border-border-subtle hover:border-primary/40 text-slate-300 hover:text-white flex items-center justify-center shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none shadow-md cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </button>
           </div>
         </div>
       </div>

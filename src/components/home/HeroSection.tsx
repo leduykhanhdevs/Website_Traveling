@@ -1,7 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, lazy, Suspense } from 'react';
 import { ArrowRight, Compass, Sparkles, Shield, Zap } from 'lucide-react';
-import { HeaderAstrolabe } from '../3d/HeaderAstrolabe';
 import { gsap } from 'gsap';
+
+const HeaderAstrolabe = lazy(() =>
+  import('../3d/HeaderAstrolabe').then((mod) => ({ default: mod.HeaderAstrolabe }))
+);
 
 export const HeroSection: React.FC<{
   onExploreClick: () => void;
@@ -123,7 +126,15 @@ export const HeroSection: React.FC<{
           {/* Right Column: 3D Celestial Astrolabe Scene */}
           <div className="lg:col-span-5 flex items-center justify-center relative">
             <div className="w-full max-w-[480px] aspect-square relative">
-              <HeaderAstrolabe />
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center rounded-full bg-surface/30 border border-primary/20 animate-pulse">
+                    <Compass className="w-12 h-12 text-primary/40 animate-spin" />
+                  </div>
+                }
+              >
+                <HeaderAstrolabe />
+              </Suspense>
               {/* Floating ambient badge */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-border-subtle text-[11px] text-slate-300 flex items-center gap-2 shadow-xl pointer-events-none">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />

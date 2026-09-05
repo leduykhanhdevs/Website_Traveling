@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { InteractiveGlobe } from '../3d/InteractiveGlobe';
+import React, { useState, lazy, Suspense } from 'react';
 import { Destination } from '../../types';
 import { DESTINATIONS } from '../../data/destinations';
 import { Globe, Plane, ShieldCheck, Zap } from 'lucide-react';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
+
+const InteractiveGlobe = lazy(() =>
+  import('../3d/InteractiveGlobe').then((mod) => ({ default: mod.InteractiveGlobe }))
+);
 
 export const GlobeExplorerSection: React.FC = () => {
   const [activeCity, setActiveCity] = useState<Destination>(DESTINATIONS[0]);
@@ -23,10 +26,19 @@ export const GlobeExplorerSection: React.FC = () => {
 
         {/* 3D Globe Canvas Container */}
         <div className="mb-12">
-          <InteractiveGlobe
-            selectedCityId={activeCity.id}
-            onSelectCity={(city) => setActiveCity(city)}
-          />
+          <Suspense
+            fallback={
+              <div className="w-full h-[520px] rounded-3xl bg-surface/50 border border-border-subtle flex flex-col items-center justify-center gap-3 text-slate-400 animate-pulse">
+                <Globe className="w-10 h-10 text-primary/60 animate-spin" />
+                <span className="text-xs font-medium">Đang khởi tạo bản đồ địa cầu 3D tương tác...</span>
+              </div>
+            }
+          >
+            <InteractiveGlobe
+              selectedCityId={activeCity.id}
+              onSelectCity={(city) => setActiveCity(city)}
+            />
+          </Suspense>
         </div>
 
         {/* Global Telemetry Metrics */}

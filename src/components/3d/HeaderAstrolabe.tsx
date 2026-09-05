@@ -4,6 +4,7 @@ import * as THREE from 'three';
 export const HeaderAstrolabe: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isInteractive, setIsInteractive] = useState<boolean>(false);
+  const [hasWebGLError, setHasWebGLError] = useState<boolean>(false);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -21,7 +22,13 @@ export const HeaderAstrolabe: React.FC = () => {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch {
-      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      } catch (e) {
+        console.warn('WebGL initialization failed on HeaderAstrolabe, using fallback:', e);
+        setHasWebGLError(true);
+        return;
+      }
     }
 
     renderer.setSize(width, height);
@@ -264,6 +271,26 @@ export const HeaderAstrolabe: React.FC = () => {
       renderer.dispose();
     };
   }, []);
+
+  if (hasWebGLError) {
+    return (
+      <div
+        className="relative w-full h-[360px] sm:h-[440px] lg:h-[500px] flex items-center justify-center select-none"
+        role="img"
+        aria-label="Biểu tượng la bàn tinh vân dẫn đường toàn cầu của Traveling"
+      >
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border border-sky-400/30 animate-spin [animation-duration:35s]" />
+          <div className="absolute inset-5 rounded-full border border-indigo-400/25 animate-spin [animation-duration:22s] [animation-direction:reverse]" />
+          <div className="absolute inset-12 rounded-full border border-sky-400/15" />
+          <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-sky-500/35 via-indigo-500/25 to-purple-500/20 blur-xl animate-pulse" />
+          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/30 rotate-12">
+            <div className="w-6 h-6 rounded-lg bg-slate-950/40 backdrop-blur-sm" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

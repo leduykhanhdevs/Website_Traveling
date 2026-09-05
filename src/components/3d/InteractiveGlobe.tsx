@@ -37,6 +37,7 @@ export const InteractiveGlobe: React.FC<{
   });
   const [isLocating, setIsLocating] = useState<boolean>(true);
   const [zoomRatio, setZoomRatio] = useState<number>(1);
+  const [hasWebGLError, setHasWebGLError] = useState<boolean>(false);
 
   // References for external button controls (zoom, reset, re-center)
   const zoomControlsRef = useRef<{
@@ -120,7 +121,13 @@ export const InteractiveGlobe: React.FC<{
         powerPreference: 'high-performance',
       });
     } catch {
-      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      } catch (e) {
+        console.warn('WebGL initialization failed on InteractiveGlobe, using static fallback:', e);
+        setHasWebGLError(true);
+        return;
+      }
     }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -585,6 +592,79 @@ export const InteractiveGlobe: React.FC<{
       renderer.dispose();
     };
   }, [userLocation]);
+
+  if (hasWebGLError) {
+    return (
+      <div className="relative w-full h-[540px] md:h-[640px] rounded-3xl overflow-hidden glass-panel border border-border-subtle group select-none flex flex-col justify-between p-6">
+        {/* Top HUD */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface/85 backdrop-blur-md border border-emerald-500/30 text-xs text-emerald-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+            <span>Định vị: <strong className="text-white">{userLocation.label}</strong></span>
+          </div>
+          <div className="px-3 py-1 rounded-full bg-surface/80 border border-border-subtle text-xs text-slate-400">
+            Chế độ hiển thị 2D tối ưu
+          </div>
+        </div>
+
+        {/* Center Static Globe Artwork */}
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto rounded-full overflow-hidden border-2 border-sky-400/30 shadow-2xl shadow-sky-500/20 flex items-center justify-center my-4">
+          <img
+            src="/textures/earth_atmos_2048.jpg"
+            alt="Bản đồ địa cầu du lịch toàn cầu"
+            className="w-full h-full object-cover rounded-full filter brightness-90 contrast-110"
+          />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/20 via-transparent to-indigo-500/30 pointer-events-none" />
+          <div className="absolute inset-0 rounded-full border border-sky-400/40 pointer-events-none" />
+          {/* Pulsing User Location Beacon */}
+          <div className="absolute top-1/3 left-2/3 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+            <span className="w-4 h-4 rounded-full bg-emerald-400 animate-ping absolute" />
+            <span className="w-3 h-3 rounded-full bg-emerald-400 relative border-2 border-white shadow-lg shadow-emerald-400" />
+          </div>
+        </div>
+
+        {/* Bottom City Strip */}
+        <div className="bg-surface/90 backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <img
+                src={activeCity.image}
+                alt={activeCity.name}
+                className="w-14 h-14 rounded-xl object-cover border border-primary/30 flex-shrink-0"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-base font-bold text-white">{activeCity.name}</h4>
+                  <span className="text-xs text-primary px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+                    {activeCity.country}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{activeCity.description}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 md:pb-0 scrollbar-none no-scrollbar">
+              {DESTINATIONS.slice(0, 8).map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => {
+                    setActiveCity(city);
+                    if (onSelectCity) onSelectCity(city);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                    activeCity.id === city.id
+                      ? 'bg-primary text-slate-950 font-bold shadow-lg shadow-primary/25'
+                      : 'bg-surface-light text-slate-300 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  {city.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-[540px] md:h-[640px] rounded-3xl overflow-hidden glass-panel border border-border-subtle group select-none">

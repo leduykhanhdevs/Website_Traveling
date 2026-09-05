@@ -1,0 +1,16 @@
+﻿{
+  "name": "Traveling - Trợ Lý Du Lịch AI & Bản Đồ Không Gian",
+  "short_name": "Traveling",
+  "description": "Nền tảng trợ lý du lịch tích hợp trí tuệ nhân tạo thế hệ mới, địa cầu 3D và chia tiền nhóm thông minh.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

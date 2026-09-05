@@ -1,7 +1,9 @@
 import React from 'react';
 import { Compass, Shield, Globe, Heart } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC<{
+  onOpenLegal?: (tab: 'terms' | 'privacy' | 'responsible-ai' | 'sos') => void;
+}> = ({ onOpenLegal }) => {
   return (
     <footer role="contentinfo" className="border-t border-border-subtle bg-surface/50 relative z-10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,10 +65,42 @@ export const Footer: React.FC = () => {
                 <Shield className="w-3.5 h-3.5 text-primary" />
                 <span>Mã hóa tài khoản Clerk Auth</span>
               </li>
-              <li><a href="#faq" className="hover:text-primary transition-colors">Chính Sách Bảo Vệ Dữ Liệu</a></li>
-              <li><a href="#faq" className="hover:text-primary transition-colors">Điều Khoản Dịch Vụ Người Dùng</a></li>
-              <li><a href="#faq" className="hover:text-primary transition-colors">Quy Định Sử Dụng AI Có Trách Nhiệm</a></li>
-              <li><a href="#faq" className="hover:text-primary transition-colors">Danh Bạ Cứu Hộ SOS Khẩn Cấp</a></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal?.('privacy')}
+                  className="hover:text-primary transition-colors text-left"
+                >
+                  Chính Sách Bảo Vệ Dữ Liệu
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal?.('terms')}
+                  className="hover:text-primary transition-colors text-left"
+                >
+                  Điều Khoản Dịch Vụ Người Dùng
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal?.('responsible-ai')}
+                  className="hover:text-primary transition-colors text-left"
+                >
+                  Quy Định Sử Dụng AI Có Trách Nhiệm
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal?.('sos')}
+                  className="hover:text-primary text-rose-400/90 transition-colors text-left"
+                >
+                  Danh Bạ Cứu Hộ SOS Khẩn Cấp
+                </button>
+              </li>
             </ul>
           </div>
         </div>

@@ -15,6 +15,7 @@ import { PricingComparison } from './components/home/PricingComparison';
 import { FaqSection } from './components/home/FaqSection';
 import { Footer } from './components/layout/Footer';
 import { AuthModal } from './components/home/AuthModal';
+import { LegalModal, LegalTab } from './components/home/LegalModal';
 
 // Register GSAP plugin
 if (typeof window !== 'undefined') {
@@ -24,6 +25,20 @@ if (typeof window !== 'undefined') {
 export function App() {
   const mainRef = useRef<HTMLDivElement>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [legalModalState, setLegalModalState] = useState<{
+    isOpen: boolean;
+    tab: LegalTab;
+  }>({
+    isOpen: false,
+    tab: 'terms',
+  });
+
+  const handleOpenLegal = (tab: LegalTab) => {
+    setLegalModalState({
+      isOpen: true,
+      tab,
+    });
+  };
 
   // GSAP Orchestrated Animation Pipeline
   useEffect(() => {
@@ -138,12 +153,20 @@ export function App() {
       </main>
 
       {/* Global Footer */}
-      <Footer />
+      <Footer onOpenLegal={handleOpenLegal} />
 
-      {/* Account Registration & Access Modal */}
+      {/* Account Registration & Early Access Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        onOpenLegal={(tab) => handleOpenLegal(tab)}
+      />
+
+      {/* Legal & Emergency Support Modal */}
+      <LegalModal
+        isOpen={legalModalState.isOpen}
+        initialTab={legalModalState.tab}
+        onClose={() => setLegalModalState(prev => ({ ...prev, isOpen: false }))}
       />
     </div>
   );

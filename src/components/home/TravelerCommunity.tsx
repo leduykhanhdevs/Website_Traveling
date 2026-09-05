@@ -1,6 +1,14 @@
 import React from 'react';
 import { TRAVELER_STORIES } from '../../data/pricing';
-import { Star, MessageSquareQuote, CheckCircle2 } from 'lucide-react';
+import { Star, MessageSquareQuote } from 'lucide-react';
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
 
 export const TravelerCommunity: React.FC = () => {
   return (
@@ -8,10 +16,10 @@ export const TravelerCommunity: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 id="community-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Được Tin Dùng Bởi Du Khách Toàn Cầu
+            Kịch Bản Trải Nghiệm & Tình Huống Thực Tế
           </h2>
           <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Những chia sẻ thực tế và hành trình chân thật từ những người đã dùng Traveling để khám phá các miền đất mới.
+            Khám phá các tình huống du lịch thực tế minh họa cách Traveling hỗ trợ chuyến đi của bạn từ khâu chuẩn bị đến từng trải nghiệm bản địa.
           </p>
         </div>
 
@@ -38,21 +46,17 @@ export const TravelerCommunity: React.FC = () => {
                 </p>
               </div>
 
-              {/* Author Attribution */}
+              {/* Author Attribution with initials avatar block */}
               <div className="flex items-center gap-3.5 pt-4 border-t border-border-subtle">
-                <img
-                  src={story.avatar}
-                  alt={`Chân dung du khách ${story.author}`}
-                  width={44}
-                  height={44}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-11 h-11 rounded-full object-cover border border-primary/30"
-                />
+                <div
+                  className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-indigo-500/20 border border-primary/30 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  {getInitials(story.author)}
+                </div>
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-bold text-white">{story.author}</h3>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
                   </div>
                   <span className="text-[11px] text-slate-400 block">{story.location}</span>
                   <span className="text-[10px] text-primary font-medium">{story.trip}</span>

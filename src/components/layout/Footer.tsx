@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Shield, Globe, Heart } from 'lucide-react';
+import { Compass, Shield, Globe, Heart, Mail } from 'lucide-react';
 
 export const Footer: React.FC<{
   onOpenLegal?: (tab: 'terms' | 'privacy' | 'responsible-ai' | 'sos') => void;
@@ -58,12 +58,21 @@ export const Footer: React.FC<{
           {/* Col 4: An Toàn & Bảo Mật */}
           <div>
             <h3 className="text-xs uppercase font-bold text-white tracking-wider mb-4">
-              Bảo Mật & Pháp Lý
+              Bảo Mật & Liên Hệ
             </h3>
             <ul className="space-y-2 text-xs text-slate-400">
               <li className="flex items-center gap-1.5">
                 <Shield className="w-3.5 h-3.5 text-primary" />
                 <span>Mã hóa tài khoản Clerk Auth</span>
+              </li>
+              <li>
+                <a
+                  href="mailto:khanhdevs@gmail.com"
+                  className="hover:text-primary transition-colors text-slate-300 flex items-center gap-1.5"
+                >
+                  <Mail className="w-3.5 h-3.5 text-primary" />
+                  <span>khanhdevs@gmail.com</span>
+                </a>
               </li>
               <li>
                 <button

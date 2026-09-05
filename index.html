@@ -3,41 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338BDF8'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/></svg>" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     
     <!-- SEO Primary Meta Tags -->
     <title>Traveling | Nền Tảng Du Lịch Thông Minh Thế Hệ Mới</title>
     <meta name="title" content="Traveling | Nền Tảng Du Lịch Thông Minh Thế Hệ Mới" />
     <meta name="description" content="Trợ lý du lịch thông minh thế hệ mới tích hợp AI khám phá địa điểm theo thời gian thực, lập lịch trình tự động thích ứng thời tiết, bộ dịch thuật 50+ ngôn ngữ với camera OCR và sổ quỹ chia tiền nhóm VietQR." />
-    <meta name="keywords" content="Traveling, du lịch thông minh, trợ lý du lịch AI, lập lịch trình du lịch, dịch thực đơn camera, chia tiền nhóm du lịch, khám phá địa điểm, du lịch tự túc, Tokyo, Đà Nẵng, Paris, Bali" />
+    <meta name="keywords" content="Traveling, du lịch thông minh, trợ lý du lịch AI, lập lịch trình du lịch, dịch thực đơn camera, chia tiền nhóm du lịch, khám phá địa điểm, du lịch tự túc, Tokyo, Đà Nẵng, Paris, Bali, Hà Nội, TP Hồ Chí Minh" />
     <meta name="author" content="Traveling Development Team" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#070A11" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Browser Specific Compatibility (Apple Safari / iOS, Microsoft Edge / Windows) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Traveling" />
+    <meta name="msapplication-TileColor" content="#070A11" />
+    <meta name="application-name" content="Traveling" />
+
+    <!-- Canonical & Multilingual Tags -->
     <link rel="canonical" href="https://websitetraveling.vercel.app/" />
+    <link rel="alternate" hreflang="vi" href="https://websitetraveling.vercel.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://websitetraveling.vercel.app/" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Search Engine Verifications (Google Search Console, Bing Webmaster Tools) -->
+    <meta name="google-site-verification" content="google-site-verification-placeholder" />
+    <meta name="msvalidate.01" content="bing-site-verification-placeholder" />
 
     <!-- Geo Metadata -->
     <meta name="geo.region" content="VN" />
     <meta name="geo.position" content="10.7769;106.7009" />
     <meta name="ICBM" content="10.7769, 106.7009" />
 
-    <!-- Open Graph / Facebook (AEO & Social Search) -->
+    <!-- Open Graph / Facebook / Zalo / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://websitetraveling.vercel.app/" />
     <meta property="og:title" content="Traveling | Nền Tảng Du Lịch Thông Minh Thế Hệ Mới" />
     <meta property="og:description" content="Trợ lý du lịch toàn diện: tự động lập lịch trình, dịch thuật đa phương thức và quản lý ngân sách thông minh trên Web, iOS và Android." />
-    <!-- TODO (Khanh): Thay anh og:image bang anh chup man hinh giao dien chinh thuc cua site tai websitetraveling.vercel.app -->
     <meta property="og:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=1200&auto=format&fit=crop" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Traveling - Nền Tảng Du Lịch Thông Minh Thế Hệ Mới" />
     <meta property="og:locale" content="vi_VN" />
     <meta property="og:site_name" content="Traveling" />
 
-    <!-- Twitter Cards -->
+    <!-- Twitter Cards (X) -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://websitetraveling.vercel.app/" />
     <meta name="twitter:title" content="Traveling | Nền Tảng Du Lịch Thông Minh Thế Hệ Mới" />
     <meta name="twitter:description" content="Trợ lý du lịch toàn diện: tự động lập lịch trình, dịch thuật đa phương thức và quản lý ngân sách thông minh." />
-    <!-- TODO (Khanh): Thay anh twitter:image bang anh chinh thuc tren Vercel -->
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=1200&auto=format&fit=crop" />
+    <meta name="twitter:creator" content="@traveling_app" />
 
     <!-- Google Fonts Preconnect & Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,7 +76,22 @@
           "url": "https://websitetraveling.vercel.app/",
           "name": "Traveling",
           "description": "Nền tảng trợ lý du lịch toàn diện thế hệ mới",
-          "inLanguage": "vi-VN"
+          "inLanguage": "vi-VN",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://websitetraveling.vercel.app/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://websitetraveling.vercel.app/#organization",
+          "name": "Traveling",
+          "url": "https://websitetraveling.vercel.app/",
+          "logo": "https://websitetraveling.vercel.app/favicon.svg",
+          "sameAs": [
+            "https://github.com/leduykhanhdevs/Website_Traveling"
+          ]
         },
         {
           "@type": "SoftwareApplication",
@@ -71,12 +107,127 @@
             "offerCount": "2"
           },
           "featureList": [
-            "Khám phá địa điểm thông minh",
-            "Lập lịch trình du lịch tự động thích ứng thời tiết",
-            "Bộ dịch thuật 50+ ngôn ngữ chuẩn ngữ âm",
-            "Quét camera OCR dịch thực đơn tức thì",
-            "Sổ quỹ quản lý chi tiêu và chia tiền nhóm VietQR",
-            "Bản đồ không gian 3D tương tác toàn cầu"
+            "Khám phá địa điểm thông minh với phân tích đánh giá thực",
+            "Lập lịch trình du lịch tự động thích ứng thời tiết thực tế",
+            "Bộ dịch thuật 50+ ngôn ngữ chuẩn ngữ âm và nhận dạng giọng nói",
+            "Quét camera OCR dịch thực đơn và bảng hiệu tức thì",
+            "Sổ quỹ quản lý chi tiêu và chia tiền nhóm tự động tạo mã VietQR",
+            "Bản đồ không gian 3D tương tác toàn cầu hiển thị vi khí hậu"
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://websitetraveling.vercel.app/#breadcrumbs",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Trang Chủ",
+              "item": "https://websitetraveling.vercel.app/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Tọa Độ Nổi Tiếng",
+              "item": "https://websitetraveling.vercel.app/#destinations"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Bản Đồ Địa Cầu 3D",
+              "item": "https://websitetraveling.vercel.app/#globe"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Tính Năng",
+              "item": "https://websitetraveling.vercel.app/#features"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "name": "Bảng Giá",
+              "item": "https://websitetraveling.vercel.app/#pricing"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "name": "Hỏi Đáp",
+              "item": "https://websitetraveling.vercel.app/#faq"
+            }
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://websitetraveling.vercel.app/#destinations-list",
+          "name": "Tọa Độ Du Lịch Nổi Tiếng Toàn Cầu",
+          "itemListElement": [
+            {
+              "@type": "TouristDestination",
+              "position": 1,
+              "name": "Hà Nội, Việt Nam",
+              "description": "Thủ đô ngàn năm văn hiến với 36 phố phường, ẩm thực đường phố đặc sắc và di sản lịch sử phong phú.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 21.0285,
+                "longitude": 105.8542
+              }
+            },
+            {
+              "@type": "TouristDestination",
+              "position": 2,
+              "name": "TP. Hồ Chí Minh, Việt Nam",
+              "description": "Trung tâm kinh tế sầm uất, nhịp sống đô thị hiện đại kết hợp kiến trúc giao thoa Đông Tây.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 10.8231,
+                "longitude": 106.6297
+              }
+            },
+            {
+              "@type": "TouristDestination",
+              "position": 3,
+              "name": "Đà Nẵng, Việt Nam",
+              "description": "Thành phố biển đáng sống nhất Việt Nam với Bà Nà Hills, Cầu Vàng và bãi biển Mỹ Khê tuyệt đẹp.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 16.0544,
+                "longitude": 108.2022
+              }
+            },
+            {
+              "@type": "TouristDestination",
+              "position": 4,
+              "name": "Tokyo, Nhật Bản",
+              "description": "Sự giao thoa hoàn mỹ giữa văn hóa truyền thống Shinto và công nghệ tương lai hiện đại bậc nhất thế giới.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 35.6762,
+                "longitude": 139.6503
+              }
+            },
+            {
+              "@type": "TouristDestination",
+              "position": 5,
+              "name": "Paris, Pháp",
+              "description": "Kinh đô ánh sáng với tháp Eiffel tráng lệ, bảo tàng Louvre và nghệ thuật ẩm thực tinh hoa châu Âu.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 48.8566,
+                "longitude": 2.3522
+              }
+            },
+            {
+              "@type": "TouristDestination",
+              "position": 6,
+              "name": "Bali, Indonesia",
+              "description": "Thiên đường nhiệt đới với những ngôi đền cổ kính linh thiêng, ruộng bậc thang xanh mát và bãi biển lướt sóng kỳ vĩ.",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": -8.4095,
+                "longitude": 115.1889
+              }
+            }
           ]
         },
         {
@@ -138,7 +289,71 @@
       Chuyển đến nội dung chính
     </a>
 
-    <div id="root"></div>
+    <!-- Semantic Prerender Shell for Search Engines & Non-JS Bots (Automatically replaced on React mount) -->
+    <div id="root">
+      <header style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+        <nav aria-label="Điều hướng chính">
+          <span style="font-size: 1.5rem; font-weight: 800; color: #38bdf8;">Traveling</span>
+          <a href="#destinations" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Điểm Đến</a>
+          <a href="#globe" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Bản Đồ 3D</a>
+          <a href="#features" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Tính Năng</a>
+          <a href="#demo" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Trải Nghiệm</a>
+          <a href="#pricing" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Bảng Giá</a>
+          <a href="#faq" style="margin-left: 1.5rem; color: #94a3b8; text-decoration: none;">Hỏi Đáp</a>
+        </nav>
+      </header>
+
+      <main id="main-content" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+        <section style="text-align: center; padding: 3rem 0;">
+          <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: #ffffff;">
+            Traveling: Nền Tảng Du Lịch Thông Minh Thế Hệ Mới
+          </h1>
+          <p style="font-size: 1.25rem; color: #94a3b8; max-width: 800px; margin: 0 auto 2rem auto;">
+            Trợ lý du lịch AI toàn diện: tự động lập lịch trình tối ưu theo thời tiết thực tế, bộ dịch thuật hơn 50 ngôn ngữ qua camera OCR và sổ tay chia tiền nhóm minh bạch bằng mã VietQR.
+          </p>
+        </section>
+
+        <section id="destinations" style="margin-top: 3rem;">
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #38bdf8;">
+            Khám Phá Các Tọa Độ Du Lịch Nổi Tiếng
+          </h2>
+          <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+            Tuyển tập các điểm đến hàng đầu tại Việt Nam, Châu Á, Châu Âu và toàn thế giới được chọn lọc và tối ưu cho chuyến đi của bạn.
+          </p>
+          <ul>
+            <li><strong>Hà Nội, Việt Nam:</strong> Trải nghiệm phố cổ, hồ Hoàn Kiếm, lăng Bác và ẩm thực phở truyền thống.</li>
+            <li><strong>TP. Hồ Chí Minh, Việt Nam:</strong> Khám phá phố đi bộ Nguyễn Huệ, chợ Bến Thành và nhịp sống đô thị hiện đại.</li>
+            <li><strong>Đà Nẵng, Việt Nam:</strong> Cầu Vàng Bà Nà Hills, biển Mỹ Khê và phố cổ Hội An liền kề.</li>
+            <li><strong>Tokyo, Nhật Bản:</strong> Tháp Tokyo, Shibuya Crossing và văn hóa ẩm thực xứ sở Phù Tang.</li>
+            <li><strong>Paris, Pháp:</strong> Tháp Eiffel, bảo tàng Louvre và kiến trúc lãng mạn châu Âu.</li>
+            <li><strong>Bali, Indonesia:</strong> Bãi biển nhiệt đới, ruộng bậc thang Ubud và văn hóa đền đài linh thiêng.</li>
+          </ul>
+        </section>
+
+        <section id="features" style="margin-top: 3rem;">
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #38bdf8;">
+            Tính Năng Vượt Trội Của Traveling
+          </h2>
+          <ul>
+            <li><strong>Trợ lý AI Lập Lịch Trình:</strong> Tự động sắp xếp tuyến đường thông minh, tối ưu thời gian di chuyển và tự thích ứng với dự báo thời tiết.</li>
+            <li><strong>Dịch Thuật Đa Phương Thức:</strong> Hỗ trợ hơn 50 ngôn ngữ, nhận dạng giọng nói hai chiều và quét camera OCR đọc thực đơn nước ngoài.</li>
+            <li><strong>Quản Lý Tài Chính & VietQR:</strong> Sổ quỹ nhóm chia đều chi tiêu, quy đổi ngoại tệ tức thời và thanh toán nhanh chóng bằng mã QR.</li>
+            <li><strong>Bản Đồ Địa Cầu 3D:</strong> Quan sát các tọa độ du lịch toàn cầu với hiệu ứng không gian 3D chân thực và trực quan.</li>
+          </ul>
+        </section>
+
+        <section id="pricing" style="margin-top: 3rem;">
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #38bdf8;">
+            Gói Dịch Vụ Linh Hoạt
+          </h2>
+          <p>Gói Khởi Hành (Miễn phí vĩnh viễn) và Gói Viễn Du (99.000đ/tháng với AI không giới hạn và hỗ trợ chuyên sâu 24/7).</p>
+        </section>
+      </main>
+
+      <footer style="text-align: center; padding: 2rem; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4rem; color: #64748b;">
+        <p>&copy; 2026 Traveling. Bảo lưu mọi bản quyền. Nền tảng du lịch thông minh thế hệ mới.</p>
+      </footer>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

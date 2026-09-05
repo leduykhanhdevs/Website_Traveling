@@ -139,8 +139,8 @@ export function App() {
         {/* Collaborative Multi-Currency Budget Ledger & Debt Splitter */}
         <BudgetSplitDemo />
 
-        {/* Cross-Platform Device Ecosystem (Web Next.js + iOS/Android Expo) */}
-        <PlatformShowcase />
+        {/* Cross-Platform Device Ecosystem (Web React 18 + iOS/Android Mobile) */}
+        <PlatformShowcase onOpenWaitlist={() => setIsAuthModalOpen(true)} />
 
         {/* Global Traveler Stories & Social Proof */}
         <TravelerCommunity />

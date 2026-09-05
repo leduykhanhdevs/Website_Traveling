@@ -106,7 +106,7 @@ export const Footer: React.FC<{
         </div>
 
         {/* Bottom copyright line */}
-        <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
             © {new Date().getFullYear()} Traveling Platform. Bản quyền thuộc về dự án Traveling.
           </div>

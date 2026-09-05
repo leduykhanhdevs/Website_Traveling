@@ -38,6 +38,22 @@ export const InteractiveGlobe: React.FC<{
   const [isLocating, setIsLocating] = useState<boolean>(true);
   const [zoomRatio, setZoomRatio] = useState<number>(1);
   const [hasWebGLError, setHasWebGLError] = useState<boolean>(false);
+  const [isLoadingTextures, setIsLoadingTextures] = useState<boolean>(true);
+  const [textureProgress, setTextureProgress] = useState<number>(0);
+  const [showScrollHint, setShowScrollHint] = useState<boolean>(false);
+  const scrollHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/i.test(navigator.platform || '');
+
+  const triggerScrollHint = useCallback(() => {
+    setShowScrollHint(true);
+    if (scrollHintTimeoutRef.current) {
+      clearTimeout(scrollHintTimeoutRef.current);
+    }
+    scrollHintTimeoutRef.current = setTimeout(() => {
+      setShowScrollHint(false);
+    }, 1800);
+  }, []);
 
   // References for external button controls (zoom, reset, re-center)
   const zoomControlsRef = useRef<{
@@ -140,8 +156,27 @@ export const InteractiveGlobe: React.FC<{
     const globeGroup = new THREE.Group();
     scene.add(globeGroup);
 
-    // 2. Texture Loader with local planetary textures
-    const textureLoader = new THREE.TextureLoader();
+    // 2. Texture Loader with LoadingManager for tracking progress & safe fallback
+    const loadingManager = new THREE.LoadingManager();
+    loadingManager.onProgress = (_url, itemsLoaded, itemsTotal) => {
+      const percent = Math.round((itemsLoaded / itemsTotal) * 100);
+      setTextureProgress(percent);
+    };
+    loadingManager.onLoad = () => {
+      setIsLoadingTextures(false);
+    };
+    loadingManager.onError = (url) => {
+      console.warn('Three.js texture load issue for:', url);
+      // Ensure loader closes so user can still see fallback sphere
+      setIsLoadingTextures(false);
+    };
+
+    // Safety timeout in case texture events hang
+    const safetyTimeout = setTimeout(() => {
+      setIsLoadingTextures(false);
+    }, 6000);
+
+    const textureLoader = new THREE.TextureLoader(loadingManager);
     const earthDayMap = textureLoader.load('/textures/earth_atmos_2048.jpg');
     const earthCloudsMap = textureLoader.load('/textures/earth_clouds_1024.png');
     const earthLightsMap = textureLoader.load('/textures/earth_lights_2048.png');
@@ -432,14 +467,19 @@ export const InteractiveGlobe: React.FC<{
       initialPinchDistance = 0;
     };
 
-    // Wheel Zoom listener with strict limits
+    // Wheel Zoom listener with intentional modifier check (Ctrl / Meta)
     const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      targetCameraDistance = THREE.MathUtils.clamp(
-        targetCameraDistance + e.deltaY * 0.12,
-        MIN_DISTANCE,
-        MAX_DISTANCE
-      );
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        targetCameraDistance = THREE.MathUtils.clamp(
+          targetCameraDistance + e.deltaY * 0.12,
+          MIN_DISTANCE,
+          MAX_DISTANCE
+        );
+      } else {
+        // Normal scroll: do NOT call e.preventDefault(), allowing standard webpage scrolling
+        triggerScrollHint();
+      }
     };
 
     container.addEventListener('mousedown', onMouseDown);
@@ -564,6 +604,7 @@ export const InteractiveGlobe: React.FC<{
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
       container.removeEventListener('wheel', onWheel);
+      clearTimeout(safetyTimeout);
 
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -668,11 +709,47 @@ export const InteractiveGlobe: React.FC<{
 
   return (
     <div className="relative w-full h-[540px] md:h-[640px] rounded-3xl overflow-hidden glass-panel border border-border-subtle group select-none">
+      {/* Texture Loading Overlay */}
+      {isLoadingTextures && (
+        <div
+          aria-live="polite"
+          aria-busy="true"
+          className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-md rounded-3xl transition-opacity duration-500"
+        >
+          <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary motion-safe:animate-spin" />
+            <Compass className="w-7 h-7 text-primary" aria-hidden="true" />
+          </div>
+          <div className="text-sm font-bold text-white mb-2">Đang Khởi Tạo Trái Đất 3D</div>
+          <div className="w-48 h-1.5 rounded-full bg-slate-800 overflow-hidden mb-2">
+            <div
+              className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
+              style={{ width: `${Math.max(textureProgress, 15)}%` }}
+            />
+          </div>
+          <div className="text-xs text-slate-400 font-mono">
+            {textureProgress > 0 ? `${textureProgress}%` : 'Đang nạp'} • Bản đồ địa hình & khí quyển
+          </div>
+        </div>
+      )}
+
+      {/* Modifier Scroll Zoom Toast Notice */}
+      {showScrollHint && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none px-4 py-2.5 rounded-2xl bg-black/85 backdrop-blur-md border border-primary/40 text-xs text-white shadow-2xl flex items-center gap-2 animate-fade-in"
+        >
+          <Compass className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
+          <span>Giữ <strong>{isMac ? '⌘' : 'Ctrl'}</strong> và cuộn chuột để thu phóng địa cầu</span>
+        </div>
+      )}
+
       {/* 3D WebGL Canvas Viewport */}
       <div
         ref={containerRef}
         className="w-full h-full min-h-[540px] md:min-h-[640px] cursor-grab active:cursor-grabbing"
-        title="Kéo chuột để xoay quả cầu 3D, lăn chuột để phóng to/thu nhỏ"
+        title={`Kéo chuột để xoay quả cầu 3D, giữ ${isMac ? '⌘' : 'Ctrl'} + cuộn chuột để phóng to/thu nhỏ`}
       />
 
       {/* Top Left HUD: Status & User Geolocation Pinpoint */}
@@ -716,7 +793,7 @@ export const InteractiveGlobe: React.FC<{
           <button
             onClick={() => zoomControlsRef.current?.zoomIn()}
             className="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
-            title="Phóng to Trái Đất (Lăn chuột lên)"
+            title={`Phóng to Trái Đất (${isMac ? '⌘' : 'Ctrl'} + Lăn chuột lên)`}
             aria-label="Phóng to"
           >
             <ZoomIn className="w-4 h-4" />
@@ -726,7 +803,7 @@ export const InteractiveGlobe: React.FC<{
           <button
             onClick={() => zoomControlsRef.current?.zoomOut()}
             className="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
-            title="Thu nhỏ Trái Đất (Lăn chuột xuống)"
+            title={`Thu nhỏ Trái Đất (${isMac ? '⌘' : 'Ctrl'} + Lăn chuột xuống)`}
             aria-label="Thu nhỏ"
           >
             <ZoomOut className="w-4 h-4" />
@@ -752,7 +829,7 @@ export const InteractiveGlobe: React.FC<{
       {/* Floating Instruction Hint */}
       <div className="absolute top-20 right-5 hidden lg:block pointer-events-none text-right">
         <div className="text-[11px] text-slate-400 bg-surface/75 backdrop-blur-md px-3 py-1.5 rounded-full border border-border-subtle">
-          Kéo để xoay • Lăn chuột để Zoom • Click điểm đến bên dưới để định vị
+          Kéo để xoay • {isMac ? '⌘' : 'Ctrl'} + Cuộn để Zoom • Click điểm đến bên dưới để định vị
         </div>
       </div>
 

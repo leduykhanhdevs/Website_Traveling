@@ -1,7 +1,9 @@
 import React from 'react';
 import { Smartphone, Monitor, Cloud, Shield, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 
-export const PlatformShowcase: React.FC = () => {
+export const PlatformShowcase: React.FC<{
+  onOpenWaitlist?: () => void;
+}> = ({ onOpenWaitlist }) => {
   return (
     <section id="platform" aria-labelledby="platform-heading" className="py-24 relative overflow-hidden bg-surface/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +33,7 @@ export const PlatformShowcase: React.FC = () => {
             <ul className="space-y-2.5 text-xs text-slate-300 border-t border-border-subtle pt-6">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
-                <span>Next.js App Router hiệu năng cao</span>
+                <span>React 18 + Vite SPA tốc độ cao</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
@@ -45,36 +47,54 @@ export const PlatformShowcase: React.FC = () => {
           </div>
 
           {/* Platform 2: Mobile App */}
-          <div className="glass-card p-8 rounded-3xl border border-primary/40 relative overflow-hidden group shadow-xl shadow-primary/10">
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold bg-primary text-slate-950">
-              ĐỒNG HÀNH MỌI NƠI
+          <div className="glass-card p-8 rounded-3xl border border-primary/40 relative overflow-hidden group shadow-xl shadow-primary/10 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                  <Smartphone className="w-6 h-6" />
+                </div>
+                <div className="px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  SẮP RA MẮT • COMING SOON
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
+                Ứng Dụng Di Động iOS & Android
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                Trợ thủ đắc lực bỏ túi: quét máy ảnh dịch tức thì, nhận diện giọng nói hai chiều và kích hoạt nút báo động khẩn cấp SOS khi cần.
+              </p>
+
+              <ul className="space-y-2.5 text-xs text-slate-300 border-t border-border-subtle pt-6">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Camera OCR quét thực đơn nhanh chóng</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Chế độ ngoại tuyến tra cứu không cần mạng</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Định vị cứu hộ SOS một chạm</span>
+                </li>
+              </ul>
             </div>
 
-            <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary mb-6">
-              <Smartphone className="w-6 h-6" />
+            {/* Truthful Waitlist CTA - No Dead-End */}
+            <div className="pt-6 border-t border-border-subtle/70 mt-6">
+              <button
+                type="button"
+                onClick={onOpenWaitlist}
+                className="w-full py-2.5 px-4 rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/30 text-primary hover:text-white font-bold text-xs transition-all flex items-center justify-center gap-2 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+              >
+                <span>Nhận Thông Báo Khi Ra Mắt</span>
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </button>
+              <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 mt-2">
+                <span>Hỗ trợ iOS 16+ & Android 12+</span>
+              </div>
             </div>
-
-            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
-              Ứng Dụng Di Động iOS & Android
-            </h3>
-            <p className="text-xs text-slate-400 leading-relaxed mb-6">
-              Trợ thủ đắc lực bỏ túi: quét máy ảnh dịch tức thì, nhận diện giọng nói hai chiều và kích hoạt nút báo động khẩn cấp SOS khi cần.
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-300 border-t border-border-subtle pt-6">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Camera OCR quét thực đơn nhanh chóng</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Chế độ ngoại tuyến tra cứu không cần mạng</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Định vị cứu hộ SOS một chạm</span>
-              </li>
-            </ul>
           </div>
 
           {/* Platform 3: Cloud Infrastructure */}

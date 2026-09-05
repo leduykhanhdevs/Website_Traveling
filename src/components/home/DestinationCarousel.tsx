@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, MapPin, Calendar, DollarSign, Star, Compass, X } from 'lucide-react';
 import { DESTINATIONS } from '../../data/destinations';
 import { Destination } from '../../types';
@@ -10,70 +10,168 @@ export const DestinationCarousel: React.FC<{
   const [selectedRegion, setSelectedRegion] = useState<string>('Tất cả');
   const [selectedModalDest, setSelectedModalDest] = useState<Destination | null>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [dragOffset, setDragOffset] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
+  const startXRef = useRef<number>(0);
+  const dragDistanceRef = useRef<number>(0);
+  const hasDraggedRef = useRef<boolean>(false);
 
-  const regions = ['Tất cả', 'Đông Nam Á', 'Đông Á', 'Châu Âu'];
+  // Responsive cards per view (1 on mobile, 2 on tablet, 3 on desktop)
+  const [cardsPerView, setCardsPerView] = useState<number>(() => {
+    if (typeof window === 'undefined') return 3;
+    if (window.innerWidth < 640) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+  });
 
-  const filteredDestinations = selectedRegion === 'Tất cả'
-    ? DESTINATIONS
-    : DESTINATIONS.filter((d) => d.region === selectedRegion);
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      const w = window.innerWidth;
+      if (w < 640) {
+        setCardsPerView(1);
+      } else if (w < 1024) {
+        setCardsPerView(2);
+      } else {
+        setCardsPerView(3);
+      }
+    };
 
-  const maxIndex = Math.max(0, filteredDestinations.length - 1);
+    updateCardsPerView();
+    window.addEventListener('resize', updateCardsPerView);
+    return () => window.removeEventListener('resize', updateCardsPerView);
+  }, []);
+
+  // Filter tabs: Added 'Việt Nam' for dedicated domestic spotlight
+  const regions = ['Tất cả', 'Việt Nam', 'Đông Nam Á', 'Đông Á', 'Châu Âu'];
+
+  const filteredDestinations = useMemo(() => {
+    if (selectedRegion === 'Tất cả') return DESTINATIONS;
+    if (selectedRegion === 'Việt Nam') return DESTINATIONS.filter((d) => d.country === 'Việt Nam');
+    if (selectedRegion === 'Đông Nam Á') return DESTINATIONS.filter((d) => d.region === 'Đông Nam Á' && d.country !== 'Việt Nam');
+    if (selectedRegion === 'Đông Á') return DESTINATIONS.filter((d) => d.region === 'Đông Á');
+    if (selectedRegion === 'Châu Âu') return DESTINATIONS.filter((d) => d.region === 'Châu Âu');
+    return DESTINATIONS;
+  }, [selectedRegion]);
+
+  // Max index ensures cards fill 100% of viewport without clipping or empty black slots
+  const maxIndex = Math.max(0, filteredDestinations.length - cardsPerView);
+
+  // Synchronize index when region or cardsPerView changes
+  useEffect(() => {
+    setCurrentIndex((prev) => Math.min(prev, maxIndex));
+  }, [maxIndex]);
+
+  const handlePrev = useCallback(() => {
+    if (maxIndex <= 0) return;
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [maxIndex]);
+
+  const handleNext = useCallback(() => {
+    if (maxIndex <= 0) return;
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [maxIndex]);
+
+  const handleSelectRegion = (region: string) => {
+    setSelectedRegion(region);
+    setCurrentIndex(0);
+  };
 
   // Auto-play timer with infinite loop
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || isDragging || maxIndex <= 0) return;
 
     autoPlayRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+      handleNext();
     }, 4500);
 
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     };
-  }, [isPaused, maxIndex]);
+  }, [isPaused, isDragging, maxIndex, handleNext]);
 
-  // Infinite looping handlers
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  // Touch & Mouse Drag Handlers
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX;
+    dragDistanceRef.current = 0;
+    hasDraggedRef.current = false;
+    setIsDragging(true);
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const diff = e.clientX - startXRef.current;
+    dragDistanceRef.current = diff;
+    if (Math.abs(diff) > 8) {
+      hasDraggedRef.current = true;
+    }
+    setDragOffset(diff);
   };
 
-  // Track window width for pixel-perfect card sliding
-  const [cardWidth, setCardWidth] = useState<number>(384);
-  useEffect(() => {
-    const updateWidth = () => {
-      const w = window.innerWidth;
-      if (w < 640) setCardWidth(306);
-      else if (w < 768) setCardWidth(356);
-      else setCardWidth(384);
-    };
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
+  const handlePointerUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsDragging(false);
 
-  // Ensure index stays in bounds if region filter changes
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [selectedRegion]);
+    const diff = dragDistanceRef.current;
+    setDragOffset(0);
+
+    if (diff < -50) {
+      handleNext();
+    } else if (diff > 50) {
+      handlePrev();
+    }
+
+    // Keep hasDraggedRef true momentarily so click events won't trigger modal
+    setTimeout(() => {
+      hasDraggedRef.current = false;
+    }, 80);
+  };
+
+  const handlePointerCancel = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    setDragOffset(0);
+    setTimeout(() => {
+      hasDraggedRef.current = false;
+    }, 80);
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') handlePrev();
+    if (e.key === 'ArrowRight') handleNext();
+  };
 
   // Accessible Escape key to close modal
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleModalKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setSelectedModalDest(null);
     };
     if (selectedModalDest) {
-      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keydown', handleModalKeyDown);
     }
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleModalKeyDown);
   }, [selectedModalDest]);
 
+  // Dynamic card width calculation to perfectly fit viewport with 24px gap
+  const cardWidthStyle = useMemo(() => {
+    if (cardsPerView === 1) return { width: '100%' };
+    if (cardsPerView === 2) return { width: 'calc((100% - 24px) / 2)' };
+    return { width: 'calc((100% - 48px) / 3)' };
+  }, [cardsPerView]);
+
   return (
-    <section id="destinations" aria-labelledby="destinations-heading" className="py-24 relative overflow-hidden">
+    <section
+      id="destinations"
+      aria-labelledby="destinations-heading"
+      className="py-24 relative overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -82,7 +180,10 @@ export const DestinationCarousel: React.FC<{
               <Compass className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Điểm Đến Hấp Dẫn Toàn Cầu</span>
             </div>
-            <h2 id="destinations-heading" className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+            <h2
+              id="destinations-heading"
+              className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white"
+            >
               Khám Phá Các Tọa Độ Du Lịch Nổi Tiếng
             </h2>
             <p className="mt-3 text-base text-slate-400 max-w-2xl">
@@ -90,100 +191,120 @@ export const DestinationCarousel: React.FC<{
             </p>
           </div>
 
-          {/* Region Tabs - Strict zero scrollbar */}
+          {/* Region Tabs: Clean, zero-scrollbar filter bar */}
           <div
             role="tablist"
             aria-label="Bộ lọc vùng miền du lịch"
             className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {regions.map((region) => (
-              <button
-                key={region}
-                role="tab"
-                aria-selected={selectedRegion === region}
-                onClick={() => setSelectedRegion(region)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
-                  selectedRegion === region
-                    ? 'bg-primary text-slate-950 shadow-md shadow-primary/25'
-                    : 'bg-surface text-slate-400 hover:text-white hover:bg-slate-800 border border-border-subtle'
-                }`}
-              >
-                {region}
-              </button>
-            ))}
+            {regions.map((region) => {
+              const isSelected = selectedRegion === region;
+              return (
+                <button
+                  key={region}
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => handleSelectRegion(region)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+                    isSelected
+                      ? 'bg-primary text-slate-950 shadow-md shadow-primary/25 font-bold'
+                      : 'bg-surface text-slate-400 hover:text-white hover:bg-slate-800 border border-border-subtle'
+                  }`}
+                >
+                  {region}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Carousel Container */}
+        {/* Carousel Viewport Container */}
         <div
-          className="relative"
+          className="relative outline-none"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
+          aria-roledescription="carousel"
+          aria-label="Danh sách các điểm đến du lịch"
         >
           {/* Main Slider Track */}
-          <div className="overflow-hidden rounded-3xl py-4">
+          <div
+            className="overflow-hidden rounded-3xl py-3 cursor-grab active:cursor-grabbing select-none touch-pan-y"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
+            onPointerLeave={handlePointerCancel}
+          >
             <div
-              className="flex transition-transform duration-700 ease-out gap-6"
+              className="flex gap-6 will-change-transform"
               style={{
-                transform: `translateX(-${currentIndex * cardWidth}px)`,
+                transform: `translateX(calc(-${currentIndex} * (100% + 24px) / ${cardsPerView} + ${dragOffset}px))`,
+                transition: isDragging
+                  ? 'none'
+                  : 'transform 500ms cubic-bezier(0.25, 1, 0.5, 1)',
               }}
             >
-              {filteredDestinations.map((dest, idx) => {
-                const isActive = idx === currentIndex;
-                return (
-                  <div
-                    key={dest.id}
-                    onClick={() => {
-                      setSelectedModalDest(dest);
-                      if (onSelectDestination) onSelectDestination(dest);
-                    }}
-                    className={`flex-shrink-0 w-[290px] sm:w-[340px] md:w-[360px] rounded-2xl overflow-hidden glass-card cursor-pointer group transition-all duration-500 select-none ${
-                      isActive ? 'ring-2 ring-primary shadow-2xl scale-[1.02]' : 'opacity-90 hover:opacity-100'
-                    }`}
-                  >
-                    {/* Image Box */}
-                    <div className="relative h-56 w-full overflow-hidden">
-                      <img
-                        src={dest.image}
-                        alt={`Khám phá điểm đến du lịch ${dest.name} tại ${dest.country}`}
-                        width={360}
-                        height={224}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent" />
+              {filteredDestinations.map((dest) => (
+                <div
+                  key={dest.id}
+                  onClick={() => {
+                    if (hasDraggedRef.current) return;
+                    setSelectedModalDest(dest);
+                    if (onSelectDestination) onSelectDestination(dest);
+                  }}
+                  style={{
+                    ...cardWidthStyle,
+                    flexShrink: 0,
+                  }}
+                  className="rounded-2xl overflow-hidden glass-card cursor-pointer group transition-all duration-300 select-none border border-border-subtle/80 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/15 hover:-translate-y-1.5 flex flex-col justify-between"
+                >
+                  {/* Card Image Header with High Contrast Gradient */}
+                  <div className="relative h-56 w-full overflow-hidden bg-slate-900">
+                    <img
+                      src={dest.image}
+                      alt={`Khám phá điểm đến du lịch ${dest.name} tại ${dest.country}`}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none select-none"
+                    />
 
-                      {/* Floating Tags */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                        <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-surface/85 backdrop-blur-md text-white border border-white/10">
-                          {dest.country}
-                        </span>
-                        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface/85 backdrop-blur-md border border-white/10 text-amber-400 text-xs font-bold">
-                          <Star className="w-3 h-3 fill-amber-400" />
-                          <span>{dest.rating}</span>
-                        </div>
-                      </div>
+                    {/* Gradient Overlay for Pristine Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/75 via-45% to-transparent/10 pointer-events-none" />
 
-                      {/* City Name Overlay */}
-                      <div className="absolute bottom-3 left-4 right-4">
-                        <h3 className="text-2xl font-black text-white group-hover:text-primary transition-colors drop-shadow-md">
-                          {dest.name}
-                        </h3>
-                        <p className="text-xs text-slate-300 font-medium">
-                          {dest.tag}
-                        </p>
+                    {/* Floating Badges */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-slate-950/80 backdrop-blur-md text-white border border-white/15 shadow-sm">
+                        {dest.country}
+                      </span>
+                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/15 text-amber-400 text-xs font-bold shadow-sm">
+                        <Star className="w-3 h-3 fill-amber-400" />
+                        <span>{dest.rating}</span>
                       </div>
                     </div>
 
-                    {/* Card Content Body */}
-                    <div className="p-5">
-                      <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                    {/* City Name & Tagline */}
+                    <div className="absolute bottom-3 left-4 right-4 pointer-events-none">
+                      <h3 className="text-2xl font-black text-white group-hover:text-primary transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
+                        {dest.name}
+                      </h3>
+                      <p className="text-xs text-slate-200 font-medium drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] line-clamp-1 mt-0.5">
+                        {dest.tag}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-5 flex flex-col flex-grow justify-between">
+                    <div>
+                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">
                         {dest.description}
                       </p>
 
-                      <div className="space-y-2 pt-3 border-t border-border-subtle text-[11px] text-slate-400">
+                      <div className="space-y-2.5 pt-3 border-t border-border-subtle text-[11px] text-slate-400">
                         <div className="flex items-center justify-between">
                           <span className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-primary" />
@@ -197,30 +318,35 @@ export const DestinationCarousel: React.FC<{
                             <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
                             Ngân sách dự trù
                           </span>
-                          <span className="text-emerald-400 font-semibold">{dest.avgBudgetPerDay}/ngày</span>
+                          <span className="text-emerald-400 font-semibold">
+                            {dest.avgBudgetPerDay}/ngày
+                          </span>
                         </div>
                       </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedModalDest(dest);
-                        }}
-                        className="mt-4 w-full py-2.5 rounded-xl bg-surface-light hover:bg-primary hover:text-slate-950 text-xs font-bold text-slate-200 transition-all text-center border border-border-subtle"
-                      >
-                        Xem Chi Tiết Điểm Đến
-                      </button>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (hasDraggedRef.current) return;
+                        setSelectedModalDest(dest);
+                        if (onSelectDestination) onSelectDestination(dest);
+                      }}
+                      className="mt-4 w-full py-2.5 rounded-xl bg-surface-light hover:bg-primary hover:text-slate-950 text-xs font-bold text-slate-200 hover:border-primary transition-all text-center border border-border-subtle focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+                    >
+                      Xem Chi Tiết Điểm Đến
+                    </button>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center justify-between mt-8">
+          <div className="flex items-center justify-between mt-6 px-1">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-light border border-border-subtle text-xs">
+              <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-light border border-border-subtle text-xs">
                 <span className="font-mono text-primary font-bold">
                   {(currentIndex + 1).toString().padStart(2, '0')}
                 </span>
@@ -230,26 +356,36 @@ export const DestinationCarousel: React.FC<{
                 </span>
               </div>
 
-              {/* Mini progress bar */}
+              {/* Progress Indicator */}
               <div className="w-24 sm:w-36 h-1.5 rounded-full bg-slate-800 overflow-hidden hidden sm:block">
                 <div
                   className="h-full bg-primary transition-all duration-300 rounded-full"
-                  style={{ width: `${((currentIndex + 1) / filteredDestinations.length) * 100}%` }}
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      ((currentIndex + cardsPerView) / filteredDestinations.length) * 100
+                    )}%`,
+                  }}
                 />
               </div>
             </div>
 
+            {/* Previous & Next Slide Controls */}
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={handlePrev}
-                className="w-11 h-11 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
+                disabled={maxIndex <= 0}
+                className="w-11 h-11 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
                 aria-label="Điểm đến trước"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={handleNext}
-                className="w-11 h-11 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
+                disabled={maxIndex <= 0}
+                className="w-11 h-11 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
                 aria-label="Điểm đến tiếp theo"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -277,8 +413,9 @@ export const DestinationCarousel: React.FC<{
                 decoding="async"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
               <button
+                type="button"
                 onClick={() => setSelectedModalDest(null)}
                 aria-label="Đóng cửa sổ thông tin điểm đến"
                 className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90 transition-all border border-white/20 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
@@ -290,7 +427,7 @@ export const DestinationCarousel: React.FC<{
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-slate-950 mb-2 inline-block">
                   {selectedModalDest.region}
                 </span>
-                <h3 id="modal-dest-title" className="text-3xl font-black text-white">
+                <h3 id="modal-dest-title" className="text-3xl font-black text-white drop-shadow-md">
                   {selectedModalDest.name}, {selectedModalDest.country}
                 </h3>
               </div>
@@ -330,18 +467,22 @@ export const DestinationCarousel: React.FC<{
                 </div>
                 <div>
                   <span className="text-[11px] text-slate-400 block">Ngân sách trung bình</span>
-                  <span className="text-sm font-semibold text-emerald-400">{selectedModalDest.avgBudgetPerDay}/ngày</span>
+                  <span className="text-sm font-semibold text-emerald-400">
+                    {selectedModalDest.avgBudgetPerDay}/ngày
+                  </span>
                 </div>
               </div>
 
               <div className="pt-2 flex gap-3">
                 <button
+                  type="button"
                   onClick={() => setSelectedModalDest(null)}
                   className="flex-1 py-3 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-sm transition-all shadow-lg shadow-primary/20 text-center"
                 >
                   Lên Lịch Trình Cho Điểm Này
                 </button>
                 <button
+                  type="button"
                   onClick={() => setSelectedModalDest(null)}
                   className="px-6 py-3 rounded-full bg-surface-light hover:bg-slate-800 text-slate-300 font-medium text-sm transition-all border border-border-subtle"
                 >

@@ -89,7 +89,7 @@ export const AuthModal: React.FC<{
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tenban@email.com"
-                className="w-full px-4 py-3 rounded-xl bg-surface-light border border-border-subtle text-xs sm:text-sm text-white focus:outline-none focus:border-primary placeholder:text-slate-500"
+                className="w-full px-4 py-3 rounded-xl bg-surface-light border border-border-subtle text-xs sm:text-sm text-white focus:outline-none focus:border-primary placeholder:text-slate-400"
               />
             </div>
 
@@ -101,7 +101,7 @@ export const AuthModal: React.FC<{
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
 
-            <p className="text-[11px] text-center text-slate-500 pt-2 leading-normal">
+            <p className="text-[11px] text-center text-slate-400 pt-2 leading-normal">
               Bằng việc tiếp tục, bạn đồng ý với{' '}
               <button
                 type="button"

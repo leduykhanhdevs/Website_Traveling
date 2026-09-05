@@ -94,9 +94,9 @@ export const PricingComparison: React.FC = () => {
                         {f.included ? (
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                         ) : (
-                          <X className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+                          <X className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
                         )}
-                        <span className={f.included ? 'text-slate-200' : 'text-slate-500 line-through'}>
+                        <span className={f.included ? 'text-slate-200' : 'text-slate-400 line-through'}>
                           {f.title}
                         </span>
                         {f.pill && (

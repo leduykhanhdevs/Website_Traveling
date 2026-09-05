@@ -314,7 +314,7 @@ export const BudgetSplitDemo: React.FC = () => {
                   )}
                 </div>
 
-                <span className="text-slate-500 font-mono">
+                <span className="text-slate-400 font-mono">
                   {lastUpdated}
                 </span>
               </div>

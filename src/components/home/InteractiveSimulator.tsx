@@ -39,9 +39,38 @@ export const InteractiveSimulator: React.FC = () => {
     },
   };
 
+  const [itinerarySeed, setItinerarySeed] = useState<number>(0);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
   const currentTranslation =
     sampleTranslations[sourceText]?.[targetLang] ||
     'Dịch thuật tự động đang xử lý đa ngôn ngữ chuẩn xác...';
+
+  const handlePronounce = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && currentTranslation) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(currentTranslation);
+      const langMap: Record<string, string> = {
+        ja: 'ja-JP',
+        ko: 'ko-KR',
+        en: 'en-US',
+        fr: 'fr-FR',
+      };
+      utterance.lang = langMap[targetLang] || 'en-US';
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleGenerateMore = () => {
+    setIsGeneratingItinerary(true);
+    setTimeout(() => {
+      setItinerarySeed((prev) => prev + 1);
+      setIsGeneratingItinerary(false);
+    }, 450);
+  };
 
   // Sample OCR Menu items
   const ocrMenuItems = [
@@ -244,11 +273,14 @@ export const InteractiveSimulator: React.FC = () => {
                   <span>Lịch trình sẵn sàng lưu vào ứng dụng và xuất file offline</span>
                 </div>
                 <button
+                  type="button"
+                  onClick={handleGenerateMore}
+                  disabled={isGeneratingItinerary}
                   aria-label="Tạo thêm gợi ý lộ trình mới"
-                  className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-primary/20 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus:outline-none"
+                  className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-primary/20 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus:outline-none cursor-pointer disabled:opacity-60"
                 >
-                  <span>Tạo Thử Thêm Lộ Trình</span>
-                  <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>{isGeneratingItinerary ? 'Đang Tối Ưu Lộ Trình...' : 'Tạo Thử Thêm Lộ Trình'}</span>
+                  <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingItinerary ? 'animate-spin' : ''}`} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -328,11 +360,15 @@ export const InteractiveSimulator: React.FC = () => {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-indigo-400">Kết Quả Dịch Bản Xứ Chuẩn Sắc Thái</span>
                     <button
+                      type="button"
+                      onClick={handlePronounce}
                       aria-label="Phát âm câu dịch chuẩn giọng bản xứ"
-                      className="text-xs text-slate-400 hover:text-white flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-indigo-400 focus:outline-none"
+                      className={`text-xs hover:text-white flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-indigo-400 focus:outline-none cursor-pointer transition-colors ${
+                        isSpeaking ? 'text-primary font-bold animate-pulse' : 'text-slate-400'
+                      }`}
                     >
                       <Volume2 className="w-4 h-4 text-indigo-400" aria-hidden="true" />
-                      <span>Phát âm chuẩn</span>
+                      <span>{isSpeaking ? 'Đang phát âm...' : 'Phát âm chuẩn'}</span>
                     </button>
                   </div>
                   <p className="text-base sm:text-lg font-bold text-white tracking-wide">

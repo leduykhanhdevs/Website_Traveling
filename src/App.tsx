@@ -121,7 +121,7 @@ export function App() {
       <Navbar onStartClick={() => setIsAuthModalOpen(true)} />
 
       {/* Main Content Sections */}
-      <main className="relative z-10">
+      <main id="main-content" className="relative z-10">
         <div id="hero-container">
           <HeroSection
             onExploreClick={() => scrollToSection('destinations')}
@@ -135,7 +135,7 @@ export function App() {
         {/* Destinations Carousel (Owl / Modern Touch & Drag Carousel) */}
         <DestinationCarousel
           onSelectDestination={() => {
-            // Can trigger detail or scroll
+            scrollToSection('demo');
           }}
         />
 
@@ -157,7 +157,7 @@ export function App() {
         <TravelerCommunity />
 
         {/* Pricing Comparison Matrix */}
-        <PricingComparison />
+        <PricingComparison onSelectPlan={() => setIsAuthModalOpen(true)} />
 
         {/* Frequently Asked Questions */}
         <FaqSection />

@@ -476,7 +476,12 @@ export const DestinationCarousel: React.FC<{
               <div className="pt-2 flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setSelectedModalDest(null)}
+                  onClick={() => {
+                    if (onSelectDestination && selectedModalDest) {
+                      onSelectDestination(selectedModalDest);
+                    }
+                    setSelectedModalDest(null);
+                  }}
                   className="flex-1 py-3 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-sm transition-all shadow-lg shadow-primary/20 text-center"
                 >
                   Lên Lịch Trình Cho Điểm Này

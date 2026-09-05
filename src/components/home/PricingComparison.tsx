@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { PRICING_PLANS } from '../../data/pricing';
 import { CheckCircle2, X, Sparkles, ArrowRight } from 'lucide-react';
 
-export const PricingComparison: React.FC = () => {
+export const PricingComparison: React.FC<{
+  onSelectPlan?: (planId: string) => void;
+}> = ({ onSelectPlan }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   return (
@@ -110,6 +112,8 @@ export const PricingComparison: React.FC = () => {
                 </div>
 
                 <button
+                  type="button"
+                  onClick={() => onSelectPlan?.(plan.id)}
                   aria-label={`${plan.cta} gói hội viên ${plan.name}`}
                   className={`w-full py-3.5 rounded-full font-bold text-xs transition-all flex items-center justify-center gap-2 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                     plan.highlighted

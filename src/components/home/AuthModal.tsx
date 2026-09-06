@@ -62,7 +62,7 @@ export const AuthModal: React.FC<{
       aria-labelledby="auth-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
     >
-      <div className="relative w-full max-w-md bg-surface border border-border-subtle rounded-3xl p-8 shadow-2xl">
+      <div className="relative w-full max-w-md bg-surface border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           aria-label="Đóng cửa sổ đăng ký"

@@ -5,7 +5,7 @@ export const Footer: React.FC<{
   onOpenLegal?: (tab: 'terms' | 'privacy' | 'responsible-ai' | 'sos') => void;
 }> = ({ onOpenLegal }) => {
   return (
-    <footer role="contentinfo" className="border-t border-border-subtle bg-surface/50 relative z-10 pt-16 pb-12">
+    <footer role="contentinfo" className="border-t border-border-subtle bg-surface/50 relative z-10 pt-16 pb-12 pb-safe">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand Col */}

@@ -28,7 +28,7 @@ export const Navbar: React.FC<{
   return (
     <header
       role="banner"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-16 sm:h-[72px] flex items-center ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 pt-safe h-[calc(4rem+env(safe-area-inset-top,0px))] sm:h-[calc(4.5rem+env(safe-area-inset-top,0px))] flex items-center ${
         isScrolled
           ? 'bg-background/80 backdrop-blur-xl border-b border-border-subtle shadow-lg shadow-black/30'
           : 'bg-transparent'
@@ -71,7 +71,7 @@ export const Navbar: React.FC<{
         <div className="flex items-center gap-3">
           <button
             onClick={onStartClick}
-            className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-primary/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-white focus:outline-none"
+            className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-primary/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-white focus:outline-none touch-manipulation"
             aria-label="Mở hộp thoại đăng ký tài khoản miễn phí"
           >
             <span>Bắt Đầu Miễn Phí</span>
@@ -80,7 +80,7 @@ export const Navbar: React.FC<{
 
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+            className="lg:hidden w-11 h-11 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white focus-visible:ring-2 focus-visible:ring-primary focus:outline-none active:scale-95 touch-manipulation"
             aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu điều hướng'}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-nav-drawer"
@@ -96,7 +96,7 @@ export const Navbar: React.FC<{
           id="mobile-nav-drawer"
           role="navigation"
           aria-label="Điều hướng trên thiết bị di động"
-          className="lg:hidden fixed inset-x-0 top-16 sm:top-[72px] bg-surface/95 backdrop-blur-2xl border-b border-border-subtle p-6 shadow-2xl animate-fade-in"
+          className="lg:hidden fixed inset-x-0 top-[calc(4rem+env(safe-area-inset-top,0px))] sm:top-[calc(4.5rem+env(safe-area-inset-top,0px))] bg-surface/95 backdrop-blur-2xl border-b border-border-subtle p-6 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] shadow-2xl animate-fade-in max-h-[calc(100vh-5rem)] overflow-y-auto"
         >
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => (
@@ -104,7 +104,7 @@ export const Navbar: React.FC<{
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-semibold text-slate-300 hover:text-primary py-2 border-b border-border-subtle/40"
+                className="text-sm font-semibold text-slate-300 hover:text-primary py-2.5 border-b border-border-subtle/40 touch-manipulation"
               >
                 {link.label}
               </a>
@@ -114,7 +114,7 @@ export const Navbar: React.FC<{
                 setIsMobileMenuOpen(false);
                 onStartClick();
               }}
-              className="mt-2 w-full py-3 rounded-full bg-primary text-slate-950 font-bold text-xs shadow-md"
+              className="mt-2 w-full py-3.5 min-h-[44px] rounded-full bg-primary text-slate-950 font-bold text-xs shadow-md active:scale-95 touch-manipulation"
             >
               Bắt Đầu Miễn Phí
             </button>

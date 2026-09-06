@@ -2,6 +2,9 @@
 
 Một website hiện đại, trưởng thành và tối ưu trải nghiệm người dùng dành cho hệ sinh thái **Traveling**. Được xây dựng với kiến trúc hướng chuẩn **CEO**, **AEO (AI Search Engine Optimization)**, **Accessibility (WCAG AA)**, tích hợp hiệu ứng đồ họa 3D tương tác với **Three.js** và chuyển động mượt mà với **GSAP**.
 
+- **Trang web chính thức**: [https://travelingvn.vercel.app](https://travelingvn.vercel.app)
+- **Tác giả & Liên hệ**: Lê Duy Khánh (`khanhdevs@gmail.com`)
+
 ---
 
 ## Tính Năng Nổi Bật

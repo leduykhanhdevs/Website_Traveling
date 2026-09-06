@@ -117,9 +117,9 @@ export const BudgetSplitDemo: React.FC = () => {
   ];
 
   return (
-    <section id="budget" aria-labelledby="budget-heading" className="py-24 relative overflow-hidden">
+    <section id="budget" aria-labelledby="budget-heading" className="py-16 sm:py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Context & Value proposition */}
           <div className="lg:col-span-5 space-y-6">
             <h2 id="budget-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -153,16 +153,16 @@ export const BudgetSplitDemo: React.FC = () => {
           </div>
 
           {/* Right Column: Live Interactive Calculator Card */}
-          <div className="lg:col-span-7 glass-card p-6 sm:p-8 rounded-3xl border border-border-subtle shadow-2xl relative">
+          <div className="lg:col-span-7 min-w-0 w-full glass-card p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-border-subtle shadow-2xl relative overflow-hidden">
             {/* Header: Title & Luxury Currency Dropdown */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle pb-4 mb-6 gap-3">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle pb-4 mb-5 sm:mb-6 gap-3 min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
                 <Users className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
-                <h3 className="text-sm font-bold text-white">Bảng Tính Toán Bù Trừ Nợ Trực Tiếp</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">Bảng Tính Toán Bù Trừ Nợ Trực Tiếp</h3>
               </div>
 
               {/* Currency Selector with CustomSelect */}
-              <div className="w-full sm:w-56">
+              <div className="w-full sm:w-56 flex-shrink-0">
                 <CustomSelect
                   id="currency-select"
                   value={currency}
@@ -175,9 +175,11 @@ export const BudgetSplitDemo: React.FC = () => {
             {/* Total Expense Slider (Up to 500M VND) */}
             <div className="space-y-6">
               <div>
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-300 mb-2">
-                  <label htmlFor="expense-range">Tổng Chi Phí Chuyến Đi:</label>
-                  <span className="text-xl font-black text-white font-mono">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 mb-2">
+                  <label htmlFor="expense-range" className="text-xs font-semibold text-slate-300">
+                    Tổng Chi Phí Chuyến Đi:
+                  </label>
+                  <span className="text-lg sm:text-xl font-black text-white font-mono tracking-tight">
                     {formatCurrency(totalExpense, currency)}
                   </span>
                 </div>
@@ -197,15 +199,16 @@ export const BudgetSplitDemo: React.FC = () => {
                   className="w-full h-2 rounded-lg bg-surface-light appearance-none cursor-pointer accent-primary"
                 />
 
-                {/* Quick Presets: 10M, 50M, 100M, 250M, 500M */}
-                <div className="flex items-center gap-1.5 mt-2.5 overflow-x-auto pb-1 scrollbar-none no-scrollbar">
+                {/* Quick Presets: 10M, 50M, 100M, 250M, 500M (wrapped cleanly, no clipped overflow) */}
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3">
                   {expensePresets.map((preset) => (
                     <button
                       key={preset.value}
+                      type="button"
                       onClick={() => setTotalExpense(preset.value)}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                      className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
                         totalExpense === preset.value
-                          ? 'bg-primary text-slate-950 font-bold'
+                          ? 'bg-primary text-slate-950 font-bold shadow-sm shadow-primary/30'
                           : 'bg-surface-light text-slate-400 hover:text-white hover:bg-slate-800 border border-border-subtle'
                       }`}
                     >
@@ -219,56 +222,64 @@ export const BudgetSplitDemo: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-300 mb-2">
                   <span id="member-count-label">Số Lượng Thành Viên Đồng Hành:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-primary">{memberCount} người</span>
-                  </div>
+                  <span className="text-xs sm:text-sm font-bold text-primary font-mono">{memberCount} người</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Stepper buttons */}
-                  <button
-                    onClick={() => setMemberCount((prev) => Math.max(1, prev - 1))}
-                    disabled={memberCount <= 1}
-                    className="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex-shrink-0"
-                    aria-label="Giảm 1 thành viên"
+                <div className="space-y-2.5">
+                  {/* Stepper buttons & direct input */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMemberCount((prev) => Math.max(1, prev - 1))}
+                      disabled={memberCount <= 1}
+                      className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex-shrink-0"
+                      aria-label="Giảm 1 thành viên"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+
+                    <input
+                      type="number"
+                      min={1}
+                      max={200}
+                      value={memberCount}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val) && val >= 1) setMemberCount(Math.min(200, val));
+                      }}
+                      className="w-16 h-10 py-1 px-2 rounded-xl bg-surface-light border border-border-subtle text-center text-sm font-bold text-white focus:outline-none focus:border-primary"
+                      aria-label="Nhập số người tham gia"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setMemberCount((prev) => Math.min(200, prev + 1))}
+                      disabled={memberCount >= 200}
+                      className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex-shrink-0"
+                      aria-label="Tăng 1 thành viên"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+
+                    <span className="text-xs text-slate-400 pl-1 font-medium">thành viên</span>
+                  </div>
+
+                  {/* Quick Member Preset Chips (flex-wrap for clean visibility on any screen) */}
+                  <div
+                    role="group"
+                    aria-labelledby="member-count-label"
+                    className="flex flex-wrap gap-1.5 sm:gap-2"
                   >
-                    <Minus className="w-4 h-4" />
-                  </button>
-
-                  {/* Direct input for arbitrary number */}
-                  <input
-                    type="number"
-                    min={1}
-                    max={200}
-                    value={memberCount}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val) && val >= 1) setMemberCount(Math.min(200, val));
-                    }}
-                    className="w-16 py-2 px-2 rounded-xl bg-surface-light border border-border-subtle text-center text-xs font-bold text-white focus:outline-none focus:border-primary"
-                    aria-label="Nhập số người tham gia"
-                  />
-
-                  <button
-                    onClick={() => setMemberCount((prev) => Math.min(200, prev + 1))}
-                    disabled={memberCount >= 200}
-                    className="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-primary/50 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex-shrink-0"
-                    aria-label="Tăng 1 thành viên"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-
-                  {/* Quick Member Preset Chips */}
-                  <div role="group" aria-labelledby="member-count-label" className="flex items-center gap-1.5 overflow-x-auto scrollbar-none no-scrollbar flex-1 pl-1">
                     {[2, 4, 6, 8, 10, 15, 20].map((count) => (
                       <button
                         key={count}
+                        type="button"
                         onClick={() => setMemberCount(count)}
                         aria-pressed={memberCount === count}
-                        className={`px-2.5 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+                        className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border whitespace-nowrap cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                           memberCount === count
                             ? 'bg-primary text-slate-950 border-primary shadow-md shadow-primary/25'
-                            : 'bg-surface-light text-slate-300 border-border-subtle hover:bg-slate-800'
+                            : 'bg-surface-light text-slate-300 border-border-subtle hover:bg-slate-800 hover:text-white'
                         }`}
                       >
                         {count} người
@@ -279,12 +290,12 @@ export const BudgetSplitDemo: React.FC = () => {
               </div>
 
               {/* Calculated Split Output Box */}
-              <div className="p-5 rounded-2xl bg-surface-light border border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
+              <div className="p-4 sm:p-5 rounded-2xl bg-surface-light/80 border border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="min-w-0">
                   <span className="text-xs text-slate-400 block mb-1">
                     Mỗi thành viên cần đóng góp ({memberCount} người):
                   </span>
-                  <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">
+                  <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight break-words">
                     {formatCurrency(perPersonShare, currency)}
                   </div>
                   {currency !== 'VND' && (
@@ -294,16 +305,19 @@ export const BudgetSplitDemo: React.FC = () => {
                   )}
                 </div>
 
-                <div className="text-xs text-slate-300 border-l border-border-subtle pl-4 space-y-1">
-                  <div>Tự động tối ưu số lượt chuyển</div>
-                  <div className="text-emerald-400 font-medium">Chỉ cần 1 lượt thanh toán</div>
+                <div className="text-xs text-slate-300 sm:border-l sm:border-border-subtle sm:pl-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-border-subtle space-y-1.5 flex-shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span>Tự động tối ưu số lượt chuyển</span>
+                  </div>
+                  <div className="text-emerald-400 font-semibold pl-3.5">Chỉ cần 1 lượt thanh toán</div>
                 </div>
               </div>
 
               {/* Live Rate Indicator Footnote */}
-              <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-                <div className="flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${isLiveRate ? 'bg-emerald-400 animate-pulse' : 'bg-primary'}`} />
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 text-[11px] text-slate-400 px-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isLiveRate ? 'bg-emerald-400 animate-pulse' : 'bg-primary'}`} />
                   <span>
                     {isLiveRate ? 'Tỷ giá hối đoái trực tuyến' : 'Tỷ giá tham chiếu chuẩn'}
                   </span>
@@ -314,7 +328,7 @@ export const BudgetSplitDemo: React.FC = () => {
                   )}
                 </div>
 
-                <span className="text-slate-400 font-mono">
+                <span className="text-slate-400 font-mono text-xs sm:text-[11px]">
                   {lastUpdated}
                 </span>
               </div>
@@ -324,7 +338,7 @@ export const BudgetSplitDemo: React.FC = () => {
                 <span className="text-xs font-semibold text-slate-300 block mb-2">
                   Phân Bổ Chi Tiêu Dự Kiến Theo Hạng Mục:
                 </span>
-                <div className="h-3 rounded-full overflow-hidden flex gap-0.5 mb-3">
+                <div className="h-3 rounded-full overflow-hidden flex gap-0.5 mb-3 bg-surface-light">
                   {categories.map((cat, i) => (
                     <div
                       key={i}
@@ -334,11 +348,19 @@ export const BudgetSplitDemo: React.FC = () => {
                     />
                   ))}
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-400">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs sm:text-[11px]">
                   {categories.map((cat, i) => (
-                    <div key={i} className="flex items-center gap-1.5">
-                      <span className={`w-2 h-2 rounded-full ${cat.color}`} />
-                      <span>{cat.name} ({cat.percent}%)</span>
+                    <div
+                      key={i}
+                      className="flex items-center justify-between sm:justify-start gap-2 py-1.5 px-2.5 rounded-lg bg-surface-light/50 sm:bg-transparent border border-border-subtle/50 sm:border-0"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={`w-2 h-2 rounded-full ${cat.color} flex-shrink-0`} />
+                        <span className="truncate text-slate-300">{cat.name}</span>
+                      </div>
+                      <span className="text-slate-400 font-mono font-semibold flex-shrink-0">
+                        ({cat.percent}%)
+                      </span>
                     </div>
                   ))}
                 </div>

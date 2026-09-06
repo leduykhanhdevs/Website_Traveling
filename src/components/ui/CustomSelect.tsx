@@ -193,16 +193,16 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             : 'border-border-subtle hover:border-slate-600'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
-        <div className="flex items-center gap-2 truncate">
+        <div className="flex items-center gap-2 truncate min-w-0">
           {selectedOption?.icon && (
             <span className="text-primary flex-shrink-0">{selectedOption.icon}</span>
           )}
-          <span className={`text-xs font-medium truncate ${selectedOption ? 'text-white' : 'text-slate-400'}`}>
+          <span className={`text-xs font-semibold flex-shrink-0 ${selectedOption ? 'text-white' : 'text-slate-400'}`}>
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           {selectedOption?.subLabel && (
-            <span className="text-[11px] text-slate-400 hidden sm:inline">
-              ({selectedOption.subLabel})
+            <span className="text-[11px] text-slate-400 truncate">
+              • {selectedOption.subLabel}
             </span>
           )}
         </div>

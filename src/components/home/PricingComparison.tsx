@@ -19,30 +19,30 @@ export const PricingComparison: React.FC<{
           </p>
 
           {/* Billing Cycle Switch */}
-          <div role="group" aria-label="Chu kỳ thanh toán" className="inline-flex items-center p-1.5 rounded-full bg-surface-light border border-border-subtle">
+          <div role="group" aria-label="Chu kỳ thanh toán" className="inline-flex max-w-full items-center p-1 sm:p-1.5 rounded-full bg-surface-light border border-border-subtle">
             <button
               onClick={() => setBillingCycle('monthly')}
               aria-pressed={billingCycle === 'monthly'}
-              className={`px-5 py-2 rounded-full text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+              className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-primary focus:outline-none whitespace-nowrap ${
                 billingCycle === 'monthly'
                   ? 'bg-primary text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Thanh Toán Theo Tháng
+              Thanh Toán Tháng
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
               aria-pressed={billingCycle === 'yearly'}
-              className={`px-5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none whitespace-nowrap ${
                 billingCycle === 'yearly'
                   ? 'bg-primary text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <span>Thanh Toán Theo Năm</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[10px] font-extrabold">
-                Tiết kiệm 25%
+              <span>Thanh Toán Năm</span>
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[9px] sm:text-[10px] font-extrabold">
+                -25%
               </span>
             </button>
           </div>
@@ -68,14 +68,14 @@ export const PricingComparison: React.FC<{
             return (
               <div
                 key={plan.id}
-                className={`glass-card p-8 rounded-3xl relative flex flex-col justify-between transition-all ${
+                className={`glass-card p-5 sm:p-8 rounded-3xl relative flex flex-col justify-between transition-all ${
                   plan.highlighted
-                    ? 'border-2 border-primary shadow-2xl shadow-primary/20 scale-[1.02]'
+                    ? 'border-2 border-primary shadow-2xl shadow-primary/20 md:scale-[1.02]'
                     : 'border border-border-subtle'
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-primary to-secondary text-slate-950 font-black text-xs shadow-lg flex items-center gap-1">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-primary to-secondary text-slate-950 font-black text-[10px] sm:text-xs shadow-lg flex items-center gap-1 whitespace-nowrap">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>LỰA CHỌN PHỔ BIẾN NHẤT</span>
                   </div>

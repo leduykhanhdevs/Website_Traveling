@@ -23,6 +23,8 @@ if (typeof window !== 'undefined') {
 }
 
 export function App() {
+  const [plannerOpenSignal, setPlannerOpenSignal] = useState(0);
+  const [plannerDestination, setPlannerDestination] = useState('tokyo');
   const mainRef = useRef<HTMLDivElement>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [legalModalState, setLegalModalState] = useState<{
@@ -134,7 +136,9 @@ export function App() {
 
         {/* Destinations Carousel (Owl / Modern Touch & Drag Carousel) */}
         <DestinationCarousel
-          onSelectDestination={() => {
+          onSelectDestination={(dest) => {
+            setPlannerDestination(dest.id);
+            setPlannerOpenSignal(n => n + 1);
             scrollToSection('demo');
           }}
         />
@@ -145,7 +149,7 @@ export function App() {
         />
 
         {/* Interactive Feature Simulator (Smart Itinerary, Translation, OCR Viewfinder) */}
-        <InteractiveSimulator />
+        <InteractiveSimulator openSignal={plannerOpenSignal} destinationId={plannerDestination} onDestinationChange={setPlannerDestination} />
 
         {/* Collaborative Multi-Currency Budget Ledger & Debt Splitter */}
         <BudgetSplitDemo />

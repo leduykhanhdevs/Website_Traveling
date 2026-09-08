@@ -5,26 +5,11 @@ export const FaqSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const faqs = [
-    {
-      q: 'Traveling có hoàn toàn miễn phí để sử dụng không?',
-      a: 'Có, gói Khởi Hành hoàn toàn miễn phí trọn đời với đầy đủ tính năng: 20 lượt tìm kiếm AI, 50 lượt dịch thuật mỗi ngày, lập lịch trình cơ bản và theo dõi chi tiêu cá nhân.',
-    },
-    {
-      q: 'Bộ dịch thuật hỗ trợ những ngôn ngữ quốc tế nào?',
-      a: 'Hệ thống hỗ trợ hơn 50 ngôn ngữ phổ biến trên toàn cầu bao gồm tiếng Việt, Anh, Nhật Bản, Hàn Quốc, Pháp, Tây Ban Nha, Thái Lan, Trung Quốc và nhiều ngôn ngữ khác.',
-    },
-    {
-      q: 'Tôi có thể sử dụng ứng dụng khi mất kết nối Internet không?',
-      a: 'Có, các dữ liệu lịch trình đã lập, địa điểm đã lưu và sổ tay chi tiêu nhóm đều được lưu đệm ngoại tuyến giúp bạn tra cứu mượt mà ngay cả khi ở vùng núi hoặc không có SIM địa phương.',
-    },
-    {
-      q: 'Tính năng tự động điều chỉnh lịch trình theo thời tiết hoạt động thế nào?',
-      a: 'Traveling kết nối trực tiếp với cổng dữ liệu OpenWeather. Nếu phát hiện thời tiết xấu (mưa bão, nắng gắt), AI sẽ chủ động đề xuất đổi hoạt động ngoài trời sang bảo tàng, quán cà phê hoặc phòng triển lãm nghệ thuật.',
-    },
-    {
-      q: 'Dữ liệu cá nhân và chi tiêu của tôi có được bảo mật không?',
-      a: 'Chúng tôi cam kết bảo vệ quyền riêng tư tuyệt đối: mã hóa toàn bộ dữ liệu người dùng, xác thực doanh nghiệp qua Clerk và tuyệt đối không bao giờ chia sẻ hay bán thông tin cho bên thứ ba.',
-    },
+    { q: 'Tôi tạo lịch trình AI trên website như thế nào?', a: 'Chọn điểm đến, phong cách, mức chi tiêu và số ngày rồi nhấn Tạo lịch trình AI. Dịch vụ cần kết nối Internet và nhà cung cấp AI còn khả dụng; nếu không, website sẽ hiển thị lỗi để bạn thử lại.' },
+    { q: 'Lịch trên website có tự đồng bộ vào app không?', a: 'Chưa. Lịch hiện được lưu trên thiết bị khi bạn bấm Lưu trên thiết bị. Bạn có thể xuất JSON theo cấu trúc lịch trình của app, nhưng app chưa có luồng nhập và đồng bộ trực tiếp từ website này.' },
+    { q: 'Có thể xem lịch khi mất mạng không?', a: 'Bạn có thể tải lịch dưới dạng tệp văn bản để đọc ngoại tuyến. Website cần mạng để tải lần đầu và để tạo lịch mới; hiện chưa có chế độ cài đặt offline toàn bộ website.' },
+    { q: 'Chi phí và giờ tham quan có được xác minh không?', a: 'Chi phí là ước tính USD mỗi người, chưa bao gồm vé máy bay và lưu trú. Bạn cần kiểm tra giá, giờ mở cửa và thời tiết trước khi đi; AI chưa sử dụng dữ liệu thời tiết trực tiếp trên website.' },
+    { q: 'Dịch thuật và camera OCR trên website hoạt động thế nào?', a: 'Sổ tay có ba câu giao tiếp với bản dịch sang bốn ngôn ngữ và phát âm bằng trình duyệt. Tab OCR là minh họa thực đơn, chưa mở camera hoặc xử lý ảnh của bạn.' },
   ];
 
   return (

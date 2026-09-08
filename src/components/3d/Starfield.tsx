@@ -68,7 +68,7 @@ export const Starfield: React.FC = () => {
         ctx.fill();
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (!prefersReducedMotion) animationFrameId = requestAnimationFrame(render);
     };
 
     render();

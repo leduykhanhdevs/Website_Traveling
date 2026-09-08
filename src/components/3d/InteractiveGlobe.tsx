@@ -37,10 +37,10 @@ export const InteractiveGlobe: React.FC<{
   const [userLocation, setUserLocation] = useState<UserLocation>({
     lat: 21.0285,
     lng: 105.8542,
-    label: 'Hà Nội, Việt Nam',
+    label: 'Hà Nội, Việt Nam (mặc định)',
     isExact: false,
   });
-  const [isLocating, setIsLocating] = useState<boolean>(true);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
   const [zoomRatio, setZoomRatio] = useState<number>(1);
   const [hasWebGLError, setHasWebGLError] = useState<boolean>(false);
   const [isLoadingTextures, setIsLoadingTextures] = useState<boolean>(true);
@@ -65,11 +65,9 @@ export const InteractiveGlobe: React.FC<{
 
   useEffect(() => {
     if (activeCity && cityButtonRefs.current[activeCity.id]) {
-      cityButtonRefs.current[activeCity.id]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
-      });
+      const button = cityButtonRefs.current[activeCity.id];
+      const strip = cityCarouselRef.current;
+      if (button && strip) strip.scrollTo({ left: button.offsetLeft - strip.clientWidth / 2 + button.clientWidth / 2, behavior: 'smooth' });
     }
   }, [activeCity]);
 
@@ -107,7 +105,8 @@ export const InteractiveGlobe: React.FC<{
   }, [selectedCityId]);
 
   // Request actual user geolocation with high accuracy
-  useEffect(() => {
+  const requestLocation = () => {
+    setIsLocating(true);
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -137,7 +136,7 @@ export const InteractiveGlobe: React.FC<{
     } else {
       setIsLocating(false);
     }
-  }, []);
+  };
 
   // Initialize Three.js Realistic 3D Earth
   useEffect(() => {
@@ -783,11 +782,15 @@ export const InteractiveGlobe: React.FC<{
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let animationFrameId: number;
+    let inView = true;
+    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; });
+    observer.observe(container);
     const clock = new THREE.Clock();
 
     // 8. Render Animation Loop
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      if (!inView || document.hidden) return;
       const elapsedTime = clock.getElapsedTime();
 
       // Smooth camera zoom interpolation
@@ -866,6 +869,7 @@ export const InteractiveGlobe: React.FC<{
     // 9. Cleanup on Unmount
     return () => {
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
@@ -1060,14 +1064,14 @@ export const InteractiveGlobe: React.FC<{
               <span>Định vị:</span>
               <strong className="text-white">{userLocation.label}</strong>
               <span className="text-slate-400 text-[11px] font-mono hidden sm:inline">
-                ({userLocation.lat.toFixed(2)}°N, {userLocation.lng.toFixed(2)}°E)
+                ({Math.abs(userLocation.lat).toFixed(2)}°{userLocation.lat >= 0 ? 'N' : 'S'}, {Math.abs(userLocation.lng).toFixed(2)}°{userLocation.lng >= 0 ? 'E' : 'W'})
               </span>
             </div>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface/80 backdrop-blur-md border border-border-subtle text-xs text-primary pointer-events-auto">
             <Compass className="w-3.5 h-3.5" />
-            <span>Trái Đất 3D Thời Gian Thực</span>
+            <span>Bản đồ điểm đến 3D</span>
           </div>
         </div>
 
@@ -1076,6 +1080,7 @@ export const InteractiveGlobe: React.FC<{
           {/* Quick Locate User Button */}
           <button
             onClick={() => {
+              if (!userLocation.isExact) { requestLocation(); return; }
               if (zoomControlsRef.current) {
                 zoomControlsRef.current.focusLocation(userLocation.lat, userLocation.lng);
               }

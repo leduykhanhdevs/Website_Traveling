@@ -15,7 +15,7 @@ export const HeroSection: React.FC<{
   // Magnetic button hover effect with GSAP
   useEffect(() => {
     const btn = primaryBtnRef.current;
-    if (!btn) return;
+    if (!btn || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = btn.getBoundingClientRect();
@@ -103,10 +103,10 @@ export const HeroSection: React.FC<{
               <button
                 onClick={onDemoClick}
                 className="w-full sm:w-auto px-7 py-4 rounded-full glass-panel hover:bg-surface-light text-slate-200 font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 border border-border-subtle hover:border-primary/40 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
-                aria-label="Chuyển đến phần mô phỏng trực tiếp"
+                aria-label="Tạo lịch trình du lịch với AI"
               >
                 <Compass className="w-4 h-4 text-primary" aria-hidden="true" />
-                <span>Trải Nghiệm Mô Phỏng</span>
+                <span>Lên lịch trình của bạn</span>
               </button>
             </div>
 
@@ -114,11 +114,11 @@ export const HeroSection: React.FC<{
             <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
               <div className="flex items-center gap-2">
                 <Zap className="w-4 h-4 text-primary" aria-hidden="true" />
-                <span>Xử lý &lt; 1.2s tức thì</span>
+                <span>Lịch trình theo sở thích</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-                <span>Bảo mật dữ liệu Clerk</span>
+                <span>Lưu lịch trên thiết bị</span>
               </div>
             </div>
           </div>

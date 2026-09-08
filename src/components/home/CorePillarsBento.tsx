@@ -65,7 +65,7 @@ export const CorePillarsBento: React.FC<{
             {/* Metric pill footer */}
             <div className="relative z-10 pt-4 border-t border-border-subtle flex items-center justify-between">
               <div>
-                <AnimatedCounter end={3.5} decimals={1} suffix="x" className="text-2xl font-black text-white" />
+                <AnimatedCounter end={7} className="text-2xl font-black text-white" />
                 <span className="text-xs text-slate-400 ml-2">{p2.statLabel}</span>
               </div>
               <button
@@ -109,17 +109,17 @@ export const CorePillarsBento: React.FC<{
                     <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                     Quán Cà Phê Vợt Di Sản
                   </span>
-                  <span className="text-emerald-400 font-bold">Top 1 Phổ Biến</span>
+                  <span className="text-emerald-400 font-bold">Gợi ý trải nghiệm</span>
                 </div>
                 <p className="text-[11px] text-slate-400">
-                  98% lượt đánh giá tích cực từ du khách quốc tế và địa phương
+                  Khám phá văn hóa cà phê địa phương trong chuyến đi của bạn
                 </p>
               </div>
             </div>
 
             <div className="relative z-10 pt-4 border-t border-border-subtle flex items-center justify-between">
               <div>
-                <AnimatedCounter end={98.4} decimals={1} suffix="%" className="text-2xl font-black text-white" />
+                <AnimatedCounter end={18} className="text-2xl font-black text-white" />
                 <span className="text-xs text-slate-400 ml-2">{p1.statLabel}</span>
               </div>
               <button
@@ -166,7 +166,7 @@ export const CorePillarsBento: React.FC<{
 
             <div className="relative z-10 pt-4 border-t border-border-subtle flex items-center justify-between">
               <div>
-                <AnimatedCounter end={50} suffix="+" className="text-2xl font-black text-white" />
+                <AnimatedCounter end={4} className="text-2xl font-black text-white" />
                 <span className="text-xs text-slate-400 ml-2">{p3.statLabel}</span>
               </div>
               <button
@@ -213,7 +213,7 @@ export const CorePillarsBento: React.FC<{
 
             <div className="relative z-10 pt-4 border-t border-border-subtle flex items-center justify-between">
               <div>
-                <AnimatedCounter end={0} suffix="$" className="text-2xl font-black text-white" />
+                <AnimatedCounter end={10} className="text-2xl font-black text-white" />
                 <span className="text-xs text-slate-400 ml-2">{p4.statLabel}</span>
               </div>
               <button

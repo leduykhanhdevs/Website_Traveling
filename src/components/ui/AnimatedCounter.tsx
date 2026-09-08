@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -23,6 +23,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   suffix = '',
   className = '',
 }) => {
+  const [value, setValue] = useState(end);
   const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-      el.textContent = `${prefix}${end.toFixed(decimals)}${suffix}`;
+      setValue(end);
       return;
     }
 
@@ -47,7 +48,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
       },
       onUpdate: () => {
         if (el) {
-          el.textContent = `${prefix}${obj.val.toFixed(decimals)}${suffix}`;
+          setValue(obj.val);
         }
       },
     });
@@ -59,7 +60,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
 
   return (
     <span ref={spanRef} className={className}>
-      {prefix}0{suffix}
+      {`${prefix}${value.toFixed(decimals)}${suffix}`}
     </span>
   );
 };

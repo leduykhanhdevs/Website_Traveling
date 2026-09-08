@@ -1,3 +1,4 @@
+import { useDialog } from '../../hooks/useDialog';
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, MapPin, Calendar, DollarSign, Star, Compass, X } from 'lucide-react';
 import { DESTINATIONS } from '../../data/destinations';
@@ -9,6 +10,7 @@ export const DestinationCarousel: React.FC<{
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedRegion, setSelectedRegion] = useState<string>('Tất cả');
   const [selectedModalDest, setSelectedModalDest] = useState<Destination | null>(null);
+  const dialogRef = useDialog(Boolean(selectedModalDest));
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [dragOffset, setDragOffset] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -101,7 +103,7 @@ export const DestinationCarousel: React.FC<{
 
   // Auto-play timer with infinite loop
   useEffect(() => {
-    if (isPaused || isDragging || maxIndex <= 0) return;
+    if (isPaused || isDragging || maxIndex <= 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     autoPlayRef.current = setInterval(() => {
       handleNext();
@@ -290,13 +292,13 @@ export const DestinationCarousel: React.FC<{
                   : 'transform 500ms cubic-bezier(0.25, 1, 0.5, 1)',
               }}
             >
-              {filteredDestinations.map((dest) => (
+              {filteredDestinations.map((dest, index) => (
                 <div
                   key={dest.id}
+                  aria-hidden={index < currentIndex || index >= currentIndex + cardsPerView}
                   onClick={() => {
                     if (hasDraggedRef.current) return;
                     setSelectedModalDest(dest);
-                    if (onSelectDestination) onSelectDestination(dest);
                   }}
                   style={{
                     ...cardWidthStyle,
@@ -310,6 +312,8 @@ export const DestinationCarousel: React.FC<{
                       src={dest.image}
                       alt={`Khám phá điểm đến du lịch ${dest.name} tại ${dest.country}`}
                       loading="lazy"
+                      width={800}
+                      height={560}
                       decoding="async"
                       draggable={false}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none select-none"
@@ -369,13 +373,13 @@ export const DestinationCarousel: React.FC<{
                     </div>
 
                     <button
+                      tabIndex={index < currentIndex || index >= currentIndex + cardsPerView ? -1 : 0}
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (hasDraggedRef.current) return;
                         setSelectedModalDest(dest);
-                        if (onSelectDestination) onSelectDestination(dest);
-                      }}
+                          }}
                       className="mt-4 w-full py-2.5 rounded-xl bg-surface-light hover:bg-primary hover:text-slate-950 text-xs font-bold text-slate-200 hover:border-primary transition-all text-center border border-border-subtle focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
                     >
                       Xem Chi Tiết Điểm Đến
@@ -441,6 +445,7 @@ export const DestinationCarousel: React.FC<{
       {/* Destination Detail Modal */}
       {selectedModalDest && (
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-dest-title"

@@ -21,7 +21,7 @@ export const Footer: React.FC<{
             </p>
             <div className="flex items-center gap-2 text-[11px] text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Hệ thống máy chủ vận hành 100% ổn định</span>
+              <span>Lên kế hoạch cho chuyến đi tiếp theo</span>
             </div>
           </div>
 
@@ -63,7 +63,7 @@ export const Footer: React.FC<{
             <ul className="space-y-2 text-xs text-slate-400">
               <li className="flex items-center gap-1.5">
                 <Shield className="w-3.5 h-3.5 text-primary" />
-                <span>Mã hóa tài khoản Clerk Auth</span>
+                <span>Lịch lưu cục bộ trên thiết bị</span>
               </li>
               <li>
                 <a

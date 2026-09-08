@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
-import { Compass, Languages, Camera, Sparkles, MapPin, Check, RefreshCw, Volume2, ArrowRight } from 'lucide-react';
-import { DESTINATIONS } from '../../data/destinations';
-import { CustomSelect, SelectOption } from '../ui/CustomSelect';
+import { ItineraryPlanner } from './ItineraryPlanner';
+import React, { useEffect, useState } from 'react';
+import { Compass, Languages, Camera, Volume2, ArrowRight } from 'lucide-react';
 
-export const InteractiveSimulator: React.FC = () => {
+export const InteractiveSimulator = ({ destinationId, onDestinationChange, openSignal }: { openSignal: number; destinationId: string; onDestinationChange: (id: string) => void }) => {
   const [activeTab, setActiveTab] = useState<'itinerary' | 'translate' | 'ocr'>('itinerary');
 
-  // Simulator State: Itinerary
-  const [selectedCity, setSelectedCity] = useState<string>('tokyo');
-  const [travelStyle, setTravelStyle] = useState<string>('Văn hóa & Ẩm thực');
-  const [tripDays, setTripDays] = useState<number>(3);
-  const [isGeneratingItinerary, setIsGeneratingItinerary] = useState<boolean>(false);
+  useEffect(() => { setActiveTab('itinerary'); }, [openSignal]);
 
   // Simulator State: Translator
   const [sourceText, setSourceText] = useState<string>('Xin chào, cho tôi hỏi quán cà phê ngon gần đây nhất ở đâu?');
   const [targetLang, setTargetLang] = useState<string>('ja');
-  const [isTranslating, setIsTranslating] = useState<boolean>(false);
 
   // Translations dictionary for simulator demo
   const sampleTranslations: Record<string, Record<string, string>> = {
@@ -39,12 +33,13 @@ export const InteractiveSimulator: React.FC = () => {
     },
   };
 
-  const [itinerarySeed, setItinerarySeed] = useState<number>(0);
+  useEffect(() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }, [sourceText, targetLang, activeTab]);
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const currentTranslation =
     sampleTranslations[sourceText]?.[targetLang] ||
-    'Dịch thuật tự động đang xử lý đa ngôn ngữ chuẩn xác...';
+    'Câu này chưa có trong sổ tay. Hãy chọn một câu mẫu bên trên.';
 
   const handlePronounce = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && currentTranslation) {
@@ -64,14 +59,6 @@ export const InteractiveSimulator: React.FC = () => {
     }
   };
 
-  const handleGenerateMore = () => {
-    setIsGeneratingItinerary(true);
-    setTimeout(() => {
-      setItinerarySeed((prev) => prev + 1);
-      setIsGeneratingItinerary(false);
-    }, 450);
-  };
-
   // Sample OCR Menu items
   const ocrMenuItems = [
     { original: '特選 黒毛和牛ラーメン', translated: 'Ramen Thịt Bò Wagyu Hảo Hạng', price: '1,450 ¥' },
@@ -88,25 +75,36 @@ export const InteractiveSimulator: React.FC = () => {
             Trải Nghiệm Các Tính Năng Cốt Lõi
           </h2>
           <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Khám phá cách Traveling xử lý hành trình, chuyển ngữ văn hóa và phân tích thông tin du lịch thực tế ngay trên trình duyệt.
+            Lên lịch trình với AI ngay trên trình duyệt, lưu kế hoạch cho chuyến đi và khám phá sổ tay giao tiếp du lịch.
           </p>
         </div>
 
         {/* Simulator Box */}
-        <div className="max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden border border-border-subtle shadow-2xl">
+        <div className="max-w-4xl mx-auto glass-card interactive-card rounded-3xl overflow-hidden border border-border-subtle shadow-2xl">
           {/* Tab Bar */}
           <div
+            onKeyDown={(event) => {
+              const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+              if (!keys.includes(event.key)) return;
+              event.preventDefault();
+              const tabs = ['itinerary', 'translate', 'ocr'] as const;
+              const current = tabs.indexOf(activeTab);
+              const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (current + (event.key === 'ArrowRight' ? 1 : 2)) % 3;
+              setActiveTab(tabs[next]);
+              document.getElementById(`tab-${tabs[next]}`)?.focus();
+            }}
             role="tablist"
             aria-label="Bộ chọn tính năng mô phỏng trải nghiệm"
             className="flex border-b border-border-subtle bg-surface-light/40 overflow-x-auto scrollbar-none"
           >
             <button
               id="tab-itinerary"
+              tabIndex={activeTab === 'itinerary' ? 0 : -1}
               role="tab"
               aria-selected={activeTab === 'itinerary'}
               aria-controls="panel-itinerary"
               onClick={() => setActiveTab('itinerary')}
-              className={`flex-1 min-w-[200px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+              className={`flex-1 min-w-[165px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                 activeTab === 'itinerary'
                   ? 'border-primary text-primary bg-primary/5'
                   : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/40'
@@ -118,173 +116,42 @@ export const InteractiveSimulator: React.FC = () => {
 
             <button
               id="tab-translate"
+              tabIndex={activeTab === 'translate' ? 0 : -1}
               role="tab"
               aria-selected={activeTab === 'translate'}
               aria-controls="panel-translate"
               onClick={() => setActiveTab('translate')}
-              className={`flex-1 min-w-[200px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+              className={`flex-1 min-w-[165px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                 activeTab === 'translate'
                   ? 'border-primary text-primary bg-primary/5'
                   : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/40'
               }`}
             >
               <Languages className="w-4 h-4" aria-hidden="true" />
-              <span>Dịch Thuật Thời Gian Thực</span>
+              <span>Sổ tay câu giao tiếp</span>
             </button>
 
             <button
               id="tab-ocr"
+              tabIndex={activeTab === 'ocr' ? 0 : -1}
               role="tab"
               aria-selected={activeTab === 'ocr'}
               aria-controls="panel-ocr"
               onClick={() => setActiveTab('ocr')}
-              className={`flex-1 min-w-[200px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
+              className={`flex-1 min-w-[165px] py-4 px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all border-b-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                 activeTab === 'ocr'
                   ? 'border-primary text-primary bg-primary/5'
                   : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/40'
               }`}
             >
               <Camera className="w-4 h-4" aria-hidden="true" />
-              <span>Camera OCR Quét Thực Đơn</span>
+              <span>Minh họa OCR thực đơn</span>
             </button>
           </div>
 
-          {/* Tab 1: AI Itinerary Simulator */}
-          {activeTab === 'itinerary' && (
-            <div
-              id="panel-itinerary"
-              role="tabpanel"
-              aria-labelledby="tab-itinerary"
-              className="p-6 sm:p-8 space-y-6 animate-fade-in"
-            >
-              {/* Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <CustomSelect
-                  id="sim-city-select"
-                  label="Điểm Đến Mục Tiêu"
-                  value={selectedCity}
-                  onChange={(val) => setSelectedCity(val)}
-                  options={DESTINATIONS.map((dest) => ({
-                    value: dest.id,
-                    label: dest.name,
-                    subLabel: dest.country,
-                  }))}
-                />
-
-                <CustomSelect
-                  id="sim-style-select"
-                  label="Gu Du Lịch"
-                  value={travelStyle}
-                  onChange={(val) => setTravelStyle(val)}
-                  options={[
-                    { value: 'Văn hóa & Ẩm thực', label: 'Văn hóa & Ẩm thực' },
-                    { value: 'Thiên nhiên & Thám hiểm', label: 'Thiên nhiên & Thám hiểm' },
-                    { value: 'Nghỉ dưỡng sang trọng', label: 'Nghỉ dưỡng sang trọng' },
-                    { value: 'Tiết kiệm & Du lịch bụi', label: 'Tiết kiệm & Du lịch bụi' },
-                  ]}
-                />
-
-                <div>
-                  <label id="sim-days-label" className="text-xs font-semibold text-slate-300 mb-1.5 block">
-                    Số Ngày Dự Kiến
-                  </label>
-                  <div role="group" aria-labelledby="sim-days-label" className="flex items-center gap-2">
-                    {[1, 3, 5, 7].map((days) => (
-                      <button
-                        key={days}
-                        onClick={() => setTripDays(days)}
-                        aria-pressed={tripDays === days}
-                        className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all border focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
-                          tripDays === days
-                            ? 'bg-primary text-slate-950 border-primary'
-                            : 'bg-surface-light text-slate-300 border-border-subtle hover:bg-slate-800'
-                        }`}
-                      >
-                        {days}N
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Simulated Generated Day Card */}
-              <div className="rounded-2xl bg-surface-light/70 border border-border-subtle p-5">
-                <div className="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" aria-hidden="true" />
-                    <h3 className="text-sm font-bold text-white">
-                      Lịch Trình Ngày 1: Tinh Hoa {DESTINATIONS.find((d) => d.id === selectedCity)?.name}
-                    </h3>
-                  </div>
-                  <span className="text-xs text-primary font-mono">Thời tiết: Nắng ấm, 24°C</span>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                      1
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <strong className="text-white">08:30 - Thưởng thức bữa sáng truyền thống địa phương</strong>
-                        <span className="text-slate-400 text-[11px]">45 phút</span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Khám phá hương vị cà phê và món điểm tâm nổi tiếng có hơn 30 năm tuổi nghề.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                      2
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <strong className="text-white">10:00 - Tham quan di tích lịch sử và bảo tàng kiến trúc</strong>
-                        <span className="text-slate-400 text-[11px]">2 giờ</span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Tuyến đường được AI tính toán giảm 1.8km tắc đường giờ cao điểm so với bản đồ thông thường.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                      3
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <strong className="text-white">14:30 - Check-in điểm ngắm hoàng hôn toàn cảnh thành phố</strong>
-                        <span className="text-slate-400 text-[11px]">1.5 giờ</span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Tự động điều phối thời gian trùng khớp khoảnh khắc ánh sáng đẹp nhất trong ngày.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <Check className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-                  <span>Lịch trình sẵn sàng lưu vào ứng dụng và xuất file offline</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleGenerateMore}
-                  disabled={isGeneratingItinerary}
-                  aria-label="Tạo thêm gợi ý lộ trình mới"
-                  className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-primary/20 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus:outline-none cursor-pointer disabled:opacity-60"
-                >
-                  <span>{isGeneratingItinerary ? 'Đang Tối Ưu Lộ Trình...' : 'Tạo Thử Thêm Lộ Trình'}</span>
-                  <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingItinerary ? 'animate-spin' : ''}`} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-          )}
+          <div id="panel-itinerary" role="tabpanel" aria-labelledby="tab-itinerary" hidden={activeTab !== 'itinerary'}>
+            <ItineraryPlanner destinationId={destinationId} onDestinationChange={onDestinationChange} />
+          </div>
 
           {/* Tab 2: Translation Simulator */}
           {activeTab === 'translate' && (
@@ -325,14 +192,14 @@ export const InteractiveSimulator: React.FC = () => {
                     value={sourceText}
                     onChange={(e) => setSourceText(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-surface-light border border-border-subtle text-xs sm:text-sm text-white focus:outline-none focus:border-primary resize-none"
-                    placeholder="Nhập bất kỳ câu nào cần dịch..."
+                    placeholder="Tìm câu trong sổ tay giao tiếp..."
                   />
                 </div>
 
                 {/* Target Language Toggle */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
                   <span id="target-lang-label" className="text-xs font-semibold text-slate-300">Dịch Sang:</span>
-                  <div role="group" aria-labelledby="target-lang-label" className="flex items-center gap-2">
+                  <div role="group" aria-labelledby="target-lang-label" className="flex flex-wrap items-center gap-2">
                     {[
                       { code: 'ja', label: 'Tiếng Nhật (日本語)' },
                       { code: 'ko', label: 'Tiếng Hàn (한국어)' },
@@ -358,17 +225,18 @@ export const InteractiveSimulator: React.FC = () => {
                 {/* Output Translation Box */}
                 <div className="p-5 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 relative">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-indigo-400">Kết Quả Dịch Bản Xứ Chuẩn Sắc Thái</span>
+                    <span className="text-xs font-bold text-indigo-400">Bản dịch trong sổ tay</span>
                     <button
                       type="button"
                       onClick={handlePronounce}
+                      disabled={!sampleTranslations[sourceText]?.[targetLang]}
                       aria-label="Phát âm câu dịch chuẩn giọng bản xứ"
                       className={`text-xs hover:text-white flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-indigo-400 focus:outline-none cursor-pointer transition-colors ${
                         isSpeaking ? 'text-primary font-bold animate-pulse' : 'text-slate-400'
                       }`}
                     >
                       <Volume2 className="w-4 h-4 text-indigo-400" aria-hidden="true" />
-                      <span>{isSpeaking ? 'Đang phát âm...' : 'Phát âm chuẩn'}</span>
+                      <span>{isSpeaking ? 'Đang phát âm...' : 'Nghe phát âm'}</span>
                     </button>
                   </div>
                   <p className="text-base sm:text-lg font-bold text-white tracking-wide">

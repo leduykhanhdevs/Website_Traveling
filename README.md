@@ -1,6 +1,6 @@
 # Traveling - Nền Tảng Trải Nghiệm Du Lịch Toàn Cầu
 
-Một website hiện đại, trưởng thành và tối ưu trải nghiệm người dùng dành cho hệ sinh thái **Traveling**. Được xây dựng với kiến trúc hướng chuẩn **CEO**, **AEO (AI Search Engine Optimization)**, **Accessibility (WCAG AA)**, tích hợp hiệu ứng đồ họa 3D tương tác với **Three.js** và chuyển động mượt mà với **GSAP**.
+Một website hiện đại, trưởng thành và tối ưu trải nghiệm người dùng dành cho hệ sinh thái **Traveling**. Được xây dựng với kiến trúc hướng chuẩn **SEO**, **AEO (AI Search Engine Optimization)**, **Accessibility (WCAG AA)**, tích hợp hiệu ứng đồ họa 3D tương tác với **Three.js** và chuyển động mượt mà với **GSAP**.
 
 - **Trang web chính thức**: [https://travelingvn.vercel.app](https://travelingvn.vercel.app)
 - **Tác giả & Liên hệ**: Lê Duy Khánh (`khanhdevs@gmail.com`)
@@ -45,7 +45,7 @@ Một website hiện đại, trưởng thành và tối ưu trải nghiệm ngư
 ## Hướng Dẫn Cài Đặt & Chạy Cục Bộ
 
 ### Yêu Cầu Hệ Thống
-- Node.js 18+ trở lên
+- Node.js 22.12+ trở lên
 - npm hoặc pnpm / yarn
 
 ### Các Bước Thực Hiện
@@ -70,3 +70,20 @@ Một website hiện đại, trưởng thành và tối ưu trải nghiệm ngư
    ```bash
    npm run preview
    ```
+
+
+## Cập nhật kiểm thử 08/09/2026
+
+- `npm run dev`: website và hai API chạy cùng cổng 5173. Chỉ bind localhost mặc định.
+- `npm run typecheck`: kiểm tra cả frontend và API server.
+- `npm test`: kiểm tra request, lịch trùng giờ/tổng tiền và HTTP thành công/thất bại bằng provider giả lập trong test; không gửi email thật.
+- `npm run build`: kiểm tra kiểu, bundle và prerender nội dung React vào HTML cho crawler. `npm run preview` chỉ phục vụ static build, không chạy API Vercel.
+- Sao chép `.env.example` thành `.env.local`, cấu hình khóa ở server. Không dùng `VITE_` cho khóa bí mật. Đã đọc cấu trúc lịch trình của app tại `D:/DuAn/Traveling/packages/shared/src/types/itinerary.ts`; số tiền trong contract là USD.
+- Website hỗ trợ tạo lịch 1–7 ngày, lưu một lịch gần nhất trên thiết bị, xuất TXT/JSON và mở tìm kiếm bản đồ. JSON cùng cấu trúc app không đồng nghĩa app đã có tính năng nhập; chưa đồng bộ tài khoản.
+- API `/api/itinerary` gọi OpenAI, hoặc endpoint tương thích khi `AI_PROVIDER=local`. Không có fallback giả thành công. Chưa xác minh địa điểm qua Places hoặc thời tiết trực tiếp.
+- Khi triển khai trên Vercel, đặt lại các biến môi trường **server** của `.env.example` trong dự án Vercel. `.env.local` không được gửi lên Git.
+- Email cần `RESEND_API_KEY` và `RESEND_FROM` thuộc domain đã xác minh. Endpoint chỉ xác nhận nhà cung cấp đã tiếp nhận thư, chưa có danh sách waitlist lưu bền vững.
+- Giới hạn 5 lượt tạo lịch / giờ và 3 email / giờ là **theo instance**; trước khi mở API công khai quy mô lớn, cấu hình Vercel Firewall/distributed limiter, chống bot và ngân sách nhà cung cấp. Không coi limiter in-memory là giới hạn chi phí toàn hệ thống.
+- Kiểm tra AI thực tế ngày 08/09/2026: OpenAI trả 429 `credit_balance_exhausted`. Người dùng chọn giữ OpenAI và bổ sung số dư sau. Chưa xác nhận tạo lịch thật thành công.
+
+Xem `AUDIT_REPORT.md` để biết phạm vi, kết quả kiểm thử và hướng phát triển.

@@ -15,7 +15,7 @@ export const PricingComparison: React.FC<{
             Bảng Giá Minh Bạch, Không Chi Phí Ẩn
           </h2>
           <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto mb-8">
-            Bắt đầu hoàn toàn miễn phí với các tính năng cơ bản. Nâng cấp bất kỳ lúc nào để mở khóa toàn bộ sức mạnh AI chuyên sâu.
+            Thông tin gói dự kiến của hệ sinh thái Traveling. Website này chưa bán hoặc kích hoạt gói; nút bên dưới mở đăng ký nhận thông tin.
           </p>
 
           {/* Billing Cycle Switch */}

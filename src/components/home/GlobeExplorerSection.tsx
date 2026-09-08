@@ -20,7 +20,7 @@ export const GlobeExplorerSection: React.FC = () => {
             Bản Đồ Không Gian 3D Trực Quan
           </h2>
           <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Tương tác đa chiều với địa cầu số hóa: khám phá các hành lang bay quốc tế, các điểm nút văn hóa và dữ liệu du lịch thực tế theo thời gian thực.
+            Xoay địa cầu, chọn tọa độ và khám phá 18 điểm đến. Các đường nối thể hiện kết nối trực quan, không phải tuyến bay đang khai thác.
           </p>
         </div>
 
@@ -49,10 +49,10 @@ export const GlobeExplorerSection: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0" aria-hidden="true">
                   <Globe className="w-4 h-4" />
                 </div>
-                <h3 className="text-xs font-semibold text-slate-300">Độ Phủ Toàn Cầu</h3>
+                <h3 className="text-xs font-semibold text-slate-300">Điểm Đến Tuyển Chọn</h3>
               </div>
               <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={50} suffix="+ Quốc Gia" />
+                <AnimatedCounter end={18} suffix=" Điểm Đến" />
               </p>
             </div>
             <p className="text-[11px] text-slate-400 mt-2">Dữ liệu địa lý chuẩn hóa</p>
@@ -64,13 +64,13 @@ export const GlobeExplorerSection: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-400 flex-shrink-0" aria-hidden="true">
                   <Plane className="w-4 h-4" />
                 </div>
-                <h3 className="text-xs font-semibold text-slate-300">Tuyến Bay Quốc Tế</h3>
+                <h3 className="text-xs font-semibold text-slate-300">Khu Vực Khám Phá</h3>
               </div>
               <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={100} suffix="% Khép Kín" />
+                <AnimatedCounter end={3} suffix=" Khu Vực" />
               </p>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Tối ưu thời gian quá cảnh</p>
+            <p className="text-[11px] text-slate-400 mt-2">Đông Nam Á, Đông Á, Châu Âu</p>
           </div>
 
           <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-indigo-500/40 transition-colors">
@@ -79,13 +79,13 @@ export const GlobeExplorerSection: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-indigo-400/10 flex items-center justify-center text-indigo-400 flex-shrink-0" aria-hidden="true">
                   <Zap className="w-4 h-4" />
                 </div>
-                <h3 className="text-xs font-semibold text-slate-300">Tốc Độ Phản Hồi</h3>
+                <h3 className="text-xs font-semibold text-slate-300">Lịch Trình Linh Hoạt</h3>
               </div>
               <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={1.2} decimals={1} prefix="< " suffix=" Giây" />
+                <AnimatedCounter end={7} suffix=" Ngày" />
               </p>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Lập lộ trình tức thì</p>
+            <p className="text-[11px] text-slate-400 mt-2">Tùy chọn thời gian chuyến đi</p>
           </div>
 
           <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-amber-500/40 transition-colors">
@@ -96,9 +96,9 @@ export const GlobeExplorerSection: React.FC = () => {
                 </div>
                 <h3 className="text-xs font-semibold text-slate-300">Bảo Mật Người Dùng</h3>
               </div>
-              <p className="text-2xl font-black text-white tracking-tight">Chuẩn Clerk Auth</p>
+              <p className="text-2xl font-black text-white tracking-tight">Lưu Cục Bộ</p>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Mã hóa dữ liệu đầu cuối</p>
+            <p className="text-[11px] text-slate-400 mt-2">Chủ động tải lịch về thiết bị</p>
           </div>
         </div>
       </div>

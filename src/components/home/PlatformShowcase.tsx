@@ -9,10 +9,10 @@ export const PlatformShowcase: React.FC<{
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 id="platform-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Đồng Bộ Hoàn Hảo Trên Mọi Thiết Bị
+            Một Hành Trình, Nhiều Cách Khám Phá
           </h2>
           <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Lên kế hoạch chi tiết trên máy tính bàn, sau đó mở ứng dụng di động để tra cứu ngoại tuyến và nhận hỗ trợ ngay trên từng nẻo đường.
+            Lên kế hoạch trên website và tải lịch để mang theo. Kết nối tài khoản với ứng dụng di động là bước phát triển tiếp theo.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ export const PlatformShowcase: React.FC<{
             <ul className="space-y-2.5 text-xs text-slate-300 border-t border-border-subtle pt-6">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
-                <span>React 18 + Vite SPA tốc độ cao</span>
+                <span>Lập lịch theo điểm đến và ngân sách</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
@@ -41,7 +41,7 @@ export const PlatformShowcase: React.FC<{
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
-                <span>Xuất file PDF lịch trình đầy đủ</span>
+                <span>Tải lịch dạng văn bản và JSON</span>
               </li>
             </ul>
           </div>
@@ -104,10 +104,10 @@ export const PlatformShowcase: React.FC<{
             </div>
 
             <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
-              Hạ Tầng Đám Mây Tức Thời
+              Kết nối hệ sinh thái Traveling
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed mb-6">
-              Toàn bộ ghi chú, hóa đơn thanh toán nhóm và địa điểm đã lưu được đồng bộ tự động theo thời gian thực với độ trễ dưới 200ms.
+              Ứng dụng có API tài khoản riêng. Lịch trên website hiện lưu tại thiết bị của bạn, chưa tự động đồng bộ vào app.
             </p>
 
             <ul className="space-y-2.5 text-xs text-slate-300 border-t border-border-subtle pt-6">

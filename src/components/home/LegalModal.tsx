@@ -1,3 +1,4 @@
+import { useDialog } from '../../hooks/useDialog';
 ﻿import React, { useState, useEffect } from 'react';
 import { X, Shield, FileText, Cpu, PhoneCall } from 'lucide-react';
 
@@ -14,6 +15,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
   initialTab = 'terms',
   onClose,
 }) => {
+  const dialogRef = useDialog(isOpen);
   const [activeTab, setActiveTab] = useState<LegalTab>(initialTab);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="legal-modal-title"

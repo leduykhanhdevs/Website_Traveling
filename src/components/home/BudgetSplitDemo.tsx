@@ -35,7 +35,7 @@ export const BudgetSplitDemo: React.FC = () => {
   const [memberCount, setMemberCount] = useState<number>(5);
   const [currency, setCurrency] = useState<string>('VND');
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(FALLBACK_RATES);
-  const [lastUpdated, setLastUpdated] = useState<string>('Thời gian thực');
+  const [lastUpdated, setLastUpdated] = useState<string>('Chưa cập nhật trực tuyến');
   const [isLiveRate, setIsLiveRate] = useState<boolean>(false);
 
   // Fetch real-time live currency rates
@@ -47,14 +47,14 @@ export const BudgetSplitDemo: React.FC = () => {
         return res.json();
       })
       .then((data) => {
-        if (isMounted && data && data.rates) {
+        if (isMounted && data?.result === 'success' && CURRENCY_OPTIONS.every(c => typeof data.rates?.[c.value] === 'number' && Number.isFinite(data.rates[c.value]) && data.rates[c.value] > 0)) {
           setExchangeRates((prev) => ({
             ...prev,
             ...data.rates,
           }));
           setIsLiveRate(true);
-          const now = new Date();
-          setLastUpdated(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+          const now = new Date(data.time_last_update_unix * 1000);
+          setLastUpdated(now.toLocaleString('vi-VN'));
         }
       })
       .catch(() => {
@@ -97,7 +97,7 @@ export const BudgetSplitDemo: React.FC = () => {
     }
   };
 
-  const perPersonShare = Math.round(totalExpense / Math.max(1, memberCount));
+  const perPersonShare = Math.floor(totalExpense / Math.max(1, memberCount));
 
   // Quick expense presets up to 500 million VND
   const expensePresets = [
@@ -123,11 +123,11 @@ export const BudgetSplitDemo: React.FC = () => {
           {/* Left Column: Context & Value proposition */}
           <div className="lg:col-span-5 space-y-6">
             <h2 id="budget-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Chia Tiền Du Lịch Nhóm Minh Bạch, Không Sai Sót
+              Dự Trù Chi Phí, Chia Đều Cho Cả Nhóm
             </h2>
 
             <p className="text-base text-slate-400 leading-relaxed">
-              Xóa tan mọi băn khoăn về tài chính khi đi du lịch cùng bạn bè, gia đình hay đoàn đông người. Thuật toán cân bằng nợ tự động tính toán bù trừ tối giản số lần chuyển khoản giữa các thành viên.
+              Xóa tan mọi băn khoăn về tài chính khi đi du lịch cùng bạn bè, gia đình hay đoàn đông người. Bảng tính chia đều ngân sách dự kiến giữa các thành viên; chưa phải sổ theo dõi công nợ.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -147,7 +147,7 @@ export const BudgetSplitDemo: React.FC = () => {
                 <div className="w-5 h-5 rounded-full bg-emerald-400/20 text-emerald-400 flex items-center justify-center text-xs font-bold" aria-hidden="true">
                   ✓
                 </div>
-                <span>Hỗ trợ xuất mã QR VietQR chuyển khoản trực tiếp bù trừ tức thì</span>
+                <span>Đối chiếu phần đóng góp và phần lẻ để tổng tiền luôn khớp</span>
               </div>
             </div>
           </div>
@@ -158,13 +158,14 @@ export const BudgetSplitDemo: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle pb-4 mb-5 sm:mb-6 gap-3 min-w-0">
               <div className="flex items-center gap-2 min-w-0">
                 <Users className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
-                <h3 className="text-sm sm:text-base font-bold text-white truncate">Bảng Tính Toán Bù Trừ Nợ Trực Tiếp</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">Bảng chia ngân sách dự kiến</h3>
               </div>
 
               {/* Currency Selector with CustomSelect */}
               <div className="w-full sm:w-56 flex-shrink-0">
                 <CustomSelect
                   id="currency-select"
+                  label="Đơn vị tiền tệ"
                   value={currency}
                   onChange={(val) => setCurrency(val)}
                   options={CURRENCY_OPTIONS}
@@ -308,9 +309,9 @@ export const BudgetSplitDemo: React.FC = () => {
                 <div className="text-xs text-slate-300 sm:border-l sm:border-border-subtle sm:pl-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-border-subtle space-y-1.5 flex-shrink-0">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span>Tự động tối ưu số lượt chuyển</span>
+                    <span>Phần lẻ phân bổ thêm</span>
                   </div>
-                  <div className="text-emerald-400 font-semibold pl-3.5">Chỉ cần 1 lượt thanh toán</div>
+                  <div className="text-emerald-400 font-semibold pl-3.5">{totalExpense % memberCount} người thêm 1 đ</div>
                 </div>
               </div>
 
@@ -319,7 +320,7 @@ export const BudgetSplitDemo: React.FC = () => {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isLiveRate ? 'bg-emerald-400 animate-pulse' : 'bg-primary'}`} />
                   <span>
-                    {isLiveRate ? 'Tỷ giá hối đoái trực tuyến' : 'Tỷ giá tham chiếu chuẩn'}
+                    {isLiveRate ? 'Tỷ giá hối đoái trực tuyến' : 'Tỷ giá ước tính — chưa cập nhật'}
                   </span>
                   {currency !== 'VND' && (
                     <span className="text-slate-300 font-mono">

@@ -200,10 +200,14 @@ export const HeaderAstrolabe: React.FC = () => {
 
     // Animation Loop
     let animationId: number;
+    let inView = true;
+    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; });
+    observer.observe(container);
     const clock = new THREE.Clock();
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      if (!inView || document.hidden) return;
       const elapsed = clock.getElapsedTime();
 
       if (!prefersReducedMotion) {
@@ -248,6 +252,7 @@ export const HeaderAstrolabe: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animationId);
+      observer.disconnect();
       container.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('pointermove', handlePointerMove);

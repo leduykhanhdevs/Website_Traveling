@@ -1,3 +1,4 @@
+import { useDialog } from '../../hooks/useDialog';
 import React, { useState, useEffect } from 'react';
 import { X, Compass, CheckCircle2, ArrowRight, Loader2, Mail } from 'lucide-react';
 
@@ -6,6 +7,7 @@ export const AuthModal: React.FC<{
   onClose: () => void;
   onOpenLegal?: (tab: 'terms' | 'privacy') => void;
 }> = ({ isOpen, onClose, onOpenLegal }) => {
+  const dialogRef = useDialog(isOpen);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -35,21 +37,18 @@ export const AuthModal: React.FC<{
     try {
       const response = await fetch('/api/subscribe', {
         method: 'POST',
+        signal: AbortSignal.timeout(15000),
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        console.warn('API response status:', response.status, data);
-      }
-
+      const data = await response.json().catch(() => null);
+      if (!response.ok || data?.success !== true) throw new Error(data?.error || 'Chưa thể gửi thư xác nhận. Vui lòng thử lại.');
       setIsSubmitted(true);
     } catch (err) {
-      console.warn('Network error, showing success feedback:', err);
-      setIsSubmitted(true);
+      setErrorMessage(err instanceof Error ? err.message : 'Không thể kết nối. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +56,7 @@ export const AuthModal: React.FC<{
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
@@ -76,7 +76,7 @@ export const AuthModal: React.FC<{
             <Compass className="w-6 h-6 text-slate-950" aria-hidden="true" />
           </div>
           <h3 id="auth-modal-title" className="text-2xl font-black text-white">
-            Bắt Đầu Miễn Phí
+            Nhận thông tin Traveling
           </h3>
           <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
             Nhập email của bạn để nhận ngay thư cảm ơn và thông tin trải nghiệm sớm từ nhà phát triển.
@@ -88,7 +88,7 @@ export const AuthModal: React.FC<{
             <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h4 className="text-lg font-bold text-white">Đã Gửi Thư Tự Động Thành Công!</h4>
+            <h4 className="text-lg font-bold text-white">Yêu cầu gửi thư đã được tiếp nhận!</h4>
             
             <div className="p-4 rounded-2xl bg-surface-light border border-border-subtle text-left space-y-2">
               <div className="flex items-center gap-2 text-xs text-slate-300">
@@ -96,7 +96,7 @@ export const AuthModal: React.FC<{
                 <span>Gửi đến: <strong className="text-white">{email}</strong></span>
               </div>
               <div className="text-[11px] text-slate-400">
-                Email phản hồi tự động từ: <strong className="text-primary">khanhdevs@gmail.com</strong>
+                Liên hệ hỗ trợ: <strong className="text-primary">khanhdevs@gmail.com</strong>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed pt-1 border-t border-border-subtle/50">
                 💡 <em>Lưu ý: Nếu không thấy trong Hộp thư đến (Inbox), vui lòng kiểm tra thêm mục Spam hoặc Quảng cáo của bạn.</em>
@@ -135,12 +135,12 @@ export const AuthModal: React.FC<{
             <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-2.5">
               <Mail className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-300 leading-relaxed">
-                Hệ thống sẽ tự động gửi thư cảm ơn và hướng dẫn sử dụng từ <strong className="text-primary">khanhdevs@gmail.com</strong> ngay khi bạn xác nhận.
+                Bạn sẽ nhận thư xác nhận khi dịch vụ sẵn sàng. Liên hệ: <strong className="text-primary">khanhdevs@gmail.com</strong>.
               </p>
             </div>
 
             {errorMessage && (
-              <p className="text-xs text-rose-400">{errorMessage}</p>
+              <p role="alert" className="text-xs text-rose-400">{errorMessage}</p>
             )}
 
             <button
@@ -155,7 +155,7 @@ export const AuthModal: React.FC<{
                 </>
               ) : (
                 <>
-                  <span>Bắt Đầu Miễn Phí Ngay</span>
+                  <span>Nhận thư trải nghiệm</span>
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </>
               )}

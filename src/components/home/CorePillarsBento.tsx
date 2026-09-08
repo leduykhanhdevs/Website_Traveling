@@ -12,7 +12,7 @@ export const CorePillarsBento: React.FC<{
   const p4 = CORE_PILLARS[3]; // Budget
 
   return (
-    <section id="features" aria-labelledby="features-heading" className="py-24 relative">
+    <section id="features" aria-labelledby="features-heading" className="pt-20 pb-12 sm:pt-24 sm:pb-16 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header (Vertical stack) */}
         <div className="text-center max-w-3xl mx-auto mb-16">

@@ -80,7 +80,7 @@ export const InteractiveSimulator: React.FC = () => {
   ];
 
   return (
-    <section id="demo" aria-labelledby="demo-heading" className="py-24 relative overflow-hidden bg-surface/30">
+    <section id="demo" aria-labelledby="demo-heading" className="py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">

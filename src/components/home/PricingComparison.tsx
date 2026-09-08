@@ -8,7 +8,7 @@ export const PricingComparison: React.FC<{
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   return (
-    <section id="pricing" aria-labelledby="pricing-heading" className="py-24 relative overflow-hidden bg-surface/20">
+    <section id="pricing" aria-labelledby="pricing-heading" className="py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 id="pricing-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">

@@ -320,7 +320,7 @@ export const BudgetSplitDemo: React.FC = () => {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isLiveRate ? 'bg-emerald-400 animate-pulse' : 'bg-primary'}`} />
                   <span>
-                    {isLiveRate ? 'Tỷ giá hối đoái trực tuyến' : 'Tỷ giá ước tính — chưa cập nhật'}
+                    {isLiveRate ? 'Tỷ giá hối đoái trực tuyến' : 'Tỷ giá ước tính - chưa cập nhật'}
                   </span>
                   {currency !== 'VND' && (
                     <span className="text-slate-300 font-mono">

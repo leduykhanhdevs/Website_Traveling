@@ -15,7 +15,7 @@ export default async function handler(req: Request, res: ServerResponse) {
       method: 'POST', signal: AbortSignal.timeout(10000),
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ from: process.env.RESEND_FROM, to: [email], reply_to: 'khanhdevs@gmail.com',
-        subject: 'Traveling — Cảm ơn bạn đã quan tâm',
+        subject: 'Traveling - Cảm ơn bạn đã quan tâm',
         text: 'Cảm ơn bạn đã quan tâm đến Traveling! Bạn có thể trải nghiệm website tại https://travelingvn.vercel.app. Phản hồi email này để trao đổi với đội ngũ phát triển. Đây là thư xác nhận yêu cầu nhận thông tin; chưa tạo tài khoản ứng dụng.',
       }),
     });

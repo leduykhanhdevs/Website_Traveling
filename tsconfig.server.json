@@ -18,6 +18,7 @@
     "shared/**/*.ts",
     "tests/**/*.ts",
     "worker/**/*.ts",
+    "src/core/**/*.ts",
     "vite.config.ts"
   ]
 }

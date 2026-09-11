@@ -42,63 +42,55 @@ export const GlobeExplorerSection: React.FC = () => {
         </div>
 
         {/* Global Telemetry Metrics */}
-        <div id="globe-telemetry" className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-primary/40 transition-colors">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0" aria-hidden="true">
-                  <Globe className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-semibold text-slate-300">Điểm Đến Tuyển Chọn</h3>
+        <div id="globe-telemetry" className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 items-stretch">
+          <div className="glass-card p-4 sm:p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-primary/40 transition-colors text-center sm:text-left items-center sm:items-start">
+            <div className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0" aria-hidden="true">
+                <Globe className="w-4 h-4" />
               </div>
-              <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={18} suffix=" Điểm Đến" />
-              </p>
+              <h3 className="text-xs font-semibold text-slate-300">Điểm Đến Tuyển Chọn</h3>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Dữ liệu địa lý chuẩn hóa</p>
+            <p className="text-xl sm:text-2xl font-black text-white tracking-tight w-full">
+              <AnimatedCounter end={18} suffix=" Điểm Đến" />
+            </p>
+            <p className="text-[11px] text-slate-400 mt-2 w-full">Dữ liệu địa lý chuẩn hóa</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-emerald-500/40 transition-colors">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-400 flex-shrink-0" aria-hidden="true">
-                  <Plane className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-semibold text-slate-300">Khu Vực Khám Phá</h3>
+          <div className="glass-card p-4 sm:p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-emerald-500/40 transition-colors text-center sm:text-left items-center sm:items-start">
+            <div className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-400 shrink-0" aria-hidden="true">
+                <Plane className="w-4 h-4" />
               </div>
-              <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={3} suffix=" Khu Vực" />
-              </p>
+              <h3 className="text-xs font-semibold text-slate-300">Khu Vực Khám Phá</h3>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Đông Nam Á, Đông Á, Châu Âu</p>
+            <p className="text-xl sm:text-2xl font-black text-white tracking-tight w-full">
+              <AnimatedCounter end={3} suffix=" Khu Vực" />
+            </p>
+            <p className="text-[11px] text-slate-400 mt-2 w-full">Đông Nam Á, Đông Á, Châu Âu</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-indigo-500/40 transition-colors">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-400/10 flex items-center justify-center text-indigo-400 flex-shrink-0" aria-hidden="true">
-                  <Zap className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-semibold text-slate-300">Lịch Trình Linh Hoạt</h3>
+          <div className="glass-card p-4 sm:p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-indigo-500/40 transition-colors text-center sm:text-left items-center sm:items-start">
+            <div className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-400/10 flex items-center justify-center text-indigo-400 shrink-0" aria-hidden="true">
+                <Zap className="w-4 h-4" />
               </div>
-              <p className="text-2xl font-black text-white tracking-tight">
-                <AnimatedCounter end={7} suffix=" Ngày" />
-              </p>
+              <h3 className="text-xs font-semibold text-slate-300">Lịch Trình Linh Hoạt</h3>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Tùy chọn thời gian chuyến đi</p>
+            <p className="text-xl sm:text-2xl font-black text-white tracking-tight w-full">
+              <AnimatedCounter end={7} suffix=" Ngày" />
+            </p>
+            <p className="text-[11px] text-slate-400 mt-2 w-full">Tùy chọn thời gian chuyến đi</p>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-amber-500/40 transition-colors">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400 flex-shrink-0" aria-hidden="true">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-semibold text-slate-300">Bảo Mật Người Dùng</h3>
+          <div className="glass-card p-4 sm:p-5 rounded-2xl flex flex-col justify-between h-full min-h-[144px] border border-border-subtle hover:border-amber-500/40 transition-colors text-center sm:text-left items-center sm:items-start">
+            <div className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400 shrink-0" aria-hidden="true">
+                <ShieldCheck className="w-4 h-4" />
               </div>
-              <p className="text-2xl font-black text-white tracking-tight">Lưu Cục Bộ</p>
+              <h3 className="text-xs font-semibold text-slate-300">Bảo Mật Người Dùng</h3>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Chủ động tải lịch về thiết bị</p>
+            <p className="text-xl sm:text-2xl font-black text-white tracking-tight w-full">Lưu Cục Bộ</p>
+            <p className="text-[11px] text-slate-400 mt-2 w-full">Chủ động tải lịch về thiết bị</p>
           </div>
         </div>
       </div>

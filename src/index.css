@@ -12,12 +12,21 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
     /* Prevent iOS font size adjustment on orientation change */
     -webkit-text-size-adjust: 100%;
     /* Optimize font legibility across all browsers */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  section {
+    scroll-margin-top: 5rem;
+  }
+
+  canvas {
+    max-width: 100%;
   }
 
   body {

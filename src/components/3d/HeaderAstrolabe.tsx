@@ -33,6 +33,8 @@ export const HeaderAstrolabe: React.FC = () => {
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.domElement.style.maxWidth = '100%';
+    renderer.domElement.style.height = 'auto';
     container.appendChild(renderer.domElement);
 
     // Master Group for Parallax & Rotation
@@ -193,6 +195,8 @@ export const HeaderAstrolabe: React.FC = () => {
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
+      renderer.domElement.style.maxWidth = '100%';
+      renderer.domElement.style.height = 'auto';
     };
     window.addEventListener('resize', handleResize);
 

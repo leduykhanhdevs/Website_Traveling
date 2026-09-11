@@ -50,7 +50,7 @@ export const HeroSection: React.FC<{
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative min-h-[700px] lg:min-h-[820px] flex items-center justify-center pt-24 pb-14 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="relative min-h-[700px] lg:min-h-[820px] flex items-center justify-center pt-28 sm:pt-32 pb-14 px-4 sm:px-6 lg:px-8 overflow-hidden"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[350px] bg-primary/10 rounded-full blur-[130px] pointer-events-none" />
@@ -65,9 +65,9 @@ export const HeroSection: React.FC<{
       <div className="relative max-w-7xl mx-auto w-full z-10">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Semantic Headline, Copy, Actions */}
-          <div className="lg:col-span-7 text-center lg:text-left space-y-6">
+          <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 w-full">
             {/* 1. Single Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface border border-border-subtle text-xs font-semibold text-primary shadow-lg shadow-black/40">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface border border-border-subtle text-xs font-semibold text-primary shadow-lg shadow-black/40 mx-auto lg:mx-0">
               <Sparkles className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
               <span>Hệ Sinh Thái Du Lịch Trí Tuệ Nhân Tạo</span>
             </div>
@@ -75,21 +75,21 @@ export const HeroSection: React.FC<{
             {/* 2. Primary H1 Headline */}
             <h1
               id="hero-heading"
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]"
+              className="text-3xl xs:text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.15] sm:leading-[1.08] text-center lg:text-left max-w-2xl mx-auto lg:mx-0"
             >
               Khám Phá Thế Giới Với{' '}
-              <span className="bg-gradient-to-r from-primary via-sky-300 to-secondary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-sky-300 to-secondary bg-clip-text text-transparent inline-block">
                 Trí Tuệ Nhân Tạo
               </span>
             </h1>
 
             {/* 3. Subtext */}
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
+            <p className="text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal text-center lg:text-left px-2 sm:px-0 break-words">
               Tối ưu hành trình du lịch với trợ lý AI: tự động lập lịch trình, dịch thuật đa phương thức và quản lý ngân sách thông minh.
             </p>
 
             {/* 4. Action CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 sm:gap-4 pt-2 w-full max-w-md mx-auto lg:max-w-none lg:mx-0">
               <button
                 ref={primaryBtnRef}
                 onClick={onExploreClick}
@@ -110,22 +110,22 @@ export const HeroSection: React.FC<{
               </button>
             </div>
 
-            {/* Micro proof badges */}
-            <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-primary" aria-hidden="true" />
+            {/* Micro proof badges - Căn giữa chuẩn xác trên mobile */}
+            <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-slate-400 w-full mx-auto">
+              <div className="flex items-center justify-center gap-2 text-center">
+                <Zap className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
                 <span>Lịch trình theo sở thích</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+              <div className="flex items-center justify-center gap-2 text-center">
+                <Shield className="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true" />
                 <span>Lưu lịch trên thiết bị</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: 3D Celestial Astrolabe Scene */}
-          <div className="lg:col-span-5 flex items-center justify-center relative">
-            <div className="w-full max-w-[480px] aspect-square relative">
+          <div className="lg:col-span-5 flex items-center justify-center relative w-full">
+            <div className="w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[480px] aspect-square relative mx-auto">
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center rounded-full bg-surface/30 border border-primary/20 animate-pulse">
@@ -136,7 +136,7 @@ export const HeroSection: React.FC<{
                 <HeaderAstrolabe />
               </Suspense>
               {/* Floating ambient badge */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-border-subtle text-[11px] text-slate-300 flex items-center gap-2 shadow-xl pointer-events-none">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-border-subtle text-[11px] text-slate-300 flex items-center gap-2 shadow-xl pointer-events-none whitespace-nowrap">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span>Không gian định vị 3D tương tác</span>
               </div>

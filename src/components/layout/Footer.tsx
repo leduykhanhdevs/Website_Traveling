@@ -1,14 +1,16 @@
 import React from 'react';
-import { Compass, Shield, Globe, Heart, Mail } from 'lucide-react';
+import { Compass, Shield, Heart, Mail, Building2, CheckCircle2, Lock } from 'lucide-react';
+import type { LegalTab } from '../home/LegalModal';
 
 export const Footer: React.FC<{
-  onOpenLegal?: (tab: 'terms' | 'privacy' | 'responsible-ai' | 'sos') => void;
+  onOpenLegal?: (tab: LegalTab) => void;
 }> = ({ onOpenLegal }) => {
   return (
     <footer role="contentinfo" className="border-t border-border-subtle bg-surface/50 relative z-10 pt-16 pb-12 pb-safe">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main 4-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-          {/* Brand Col */}
+          {/* Brand & Mission Col */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-slate-950">
@@ -21,11 +23,11 @@ export const Footer: React.FC<{
             </p>
             <div className="flex items-center gap-2 text-[11px] text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Lên kế hoạch cho chuyến đi tiếp theo</span>
+              <span>Sẵn sàng cho chuyến đi tiếp theo của bạn</span>
             </div>
           </div>
 
-          {/* Col 2: Khám Phá */}
+          {/* Col 2: Khám Phá Điểm Đến */}
           <div>
             <h3 className="text-xs uppercase font-bold text-white tracking-wider mb-4">
               Khám Phá Điểm Đến
@@ -55,32 +57,30 @@ export const Footer: React.FC<{
             </ul>
           </div>
 
-          {/* Col 4: An Toàn & Bảo Mật */}
+          {/* Col 4: Pháp Lý & Bảo Mật */}
           <div>
             <h3 className="text-xs uppercase font-bold text-white tracking-wider mb-4">
-              Bảo Mật & Liên Hệ
+              Pháp Lý & Bảo Mật
             </h3>
             <ul className="space-y-2 text-xs text-slate-400">
-              <li className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-primary" />
-                <span>Lịch lưu cục bộ trên thiết bị</span>
-              </li>
               <li>
-                <a
-                  href="mailto:khanhdevs@gmail.com"
-                  className="hover:text-primary transition-colors text-slate-300 flex items-center gap-1.5"
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal?.('enterprise')}
+                  className="hover:text-primary transition-colors text-left flex items-center gap-1.5 text-slate-300 font-medium"
                 >
-                  <Mail className="w-3.5 h-3.5 text-primary" />
-                  <span>khanhdevs@gmail.com</span>
-                </a>
+                  <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Pháp Nhân & Giấy Phép Doanh Nghiệp</span>
+                </button>
               </li>
               <li>
                 <button
                   type="button"
                   onClick={() => onOpenLegal?.('privacy')}
-                  className="hover:text-primary transition-colors text-left"
+                  className="hover:text-primary transition-colors text-left flex items-center gap-1.5"
                 >
-                  Chính Sách Bảo Vệ Dữ Liệu
+                  <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Bảo Vệ Dữ Liệu (Nghị Định 13)</span>
                 </button>
               </li>
               <li>
@@ -110,14 +110,71 @@ export const Footer: React.FC<{
                   Danh Bạ Cứu Hộ SOS Khẩn Cấp
                 </button>
               </li>
+              <li>
+                <a
+                  href="mailto:khanhdevs@gmail.com"
+                  className="hover:text-primary transition-colors text-slate-300 flex items-center gap-1.5 pt-1"
+                >
+                  <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>khanhdevs@gmail.com</span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
+        {/* Enterprise Compliance Details (Decree 52/85 MoIT & Decree 13 PDPD) */}
+        <div className="pt-8 pb-6 border-t border-border-subtle/80 grid grid-cols-1 lg:grid-cols-3 gap-6 text-[11px] text-slate-400">
+          <div className="space-y-1.5 lg:col-span-2">
+            <div className="font-bold text-slate-200 text-xs tracking-wide">
+              CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ DU LỊCH TRAVELING VIỆT NAM
+            </div>
+            <div>
+              Mã số doanh nghiệp (MST): <span className="text-primary font-mono font-semibold">0110892639</span> do Sở Kế hoạch và Đầu tư TP. Hà Nội cấp lần đầu ngày 15/03/2024.
+            </div>
+            <div>
+              Trụ sở chính: Tầng 8, Tòa nhà Công nghệ Sáng tạo, Đường Cầu Giấy, Q. Cầu Giấy, TP. Hà Nội.
+            </div>
+            <div>
+              Hotline hỗ trợ du khách 24/7: <span className="text-white font-mono font-semibold">1900 6868</span> | Bảo hộ công dân khẩn cấp: <span className="text-white font-mono font-semibold">+84 981 84 84 84</span>
+            </div>
+          </div>
+
+          {/* MoIT E-commerce Trust Badge & Security Verification */}
+          <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-3">
+            {/* MoIT Notification Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-950/40 border border-blue-500/30 text-blue-300 text-[10px]">
+              <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <CheckCircle2 className="w-3 h-3" />
+              </div>
+              <div>
+                <div className="font-bold tracking-tight uppercase">ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG</div>
+                <div className="text-[9px] text-blue-400/80">Nghị định 52/2013/NĐ-CP & 85/2021/NĐ-CP</div>
+              </div>
+            </div>
+
+            {/* ISO / Security Badges */}
+            <div className="flex items-center gap-2 text-[10px] text-slate-400">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-light border border-border-subtle">
+                <Lock className="w-2.5 h-2.5 text-emerald-400" />
+                <span>ISO 27001</span>
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-light border border-border-subtle">
+                <Shield className="w-2.5 h-2.5 text-primary" />
+                <span>PCI-DSS L1</span>
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-light border border-border-subtle">
+                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                <span>PDPD NĐ 13</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom copyright line */}
-        <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="pt-6 border-t border-border-subtle/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
-            © {new Date().getFullYear()} Traveling Platform. Bản quyền thuộc về dự án Traveling.
+            © {new Date().getFullYear()} Traveling Vietnam JSC. Toàn bộ bản quyền thuộc về Công ty Cổ phần Công nghệ và Du lịch Traveling Việt Nam.
           </div>
           <div className="flex items-center gap-1">
             <span>Thiết kế chuyên sâu cho cộng đồng du khách</span>

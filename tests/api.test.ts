@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import itinerary from '../api/itinerary';
 import subscribe from '../api/subscribe';
+import health from '../api/health';
+import worker from '../worker/index';
 import { planSchema, requestSchema, validateGeneratedPlan } from '../shared/itinerary';
 
 const request = { destination: 'Tokyo, Nhật Bản', days: 1, budgetRange: 'midrange' as const, travelStyle: 'Văn hóa' };
@@ -57,3 +59,39 @@ test('HTTP integration: methods, validation, configuration, provider failures, s
     await new Promise<void>(resolve => server.close(() => resolve()));
   }
 });
+
+test('health endpoint: operational status and enterprise compliance', async () => {
+  // Test Node/Vercel serverless health endpoint
+  const server = createServer((req, res) => { void health(req, res); });
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address() as { port: number };
+  try {
+    const res = await fetch(`http://127.0.0.1:${address.port}/api/health`);
+    assert.equal(res.status, 200);
+    const data = (await res.json()) as any;
+    assert.equal(data.status, 'pass');
+    assert.equal(data.service, 'traveling-api');
+    assert.equal(data.checks.compliance.decree13_PDPD, true);
+
+    // Rejects POST
+    const postRes = await fetch(`http://127.0.0.1:${address.port}/api/health`, { method: 'POST' });
+    assert.equal(postRes.status, 405);
+  } finally {
+    await new Promise<void>(resolve => server.close(() => resolve()));
+  }
+
+  // Test Cloudflare Worker Edge health endpoint
+  const workerReq = new Request('https://traveling.vn/api/health', { method: 'GET' });
+  const workerRes = await worker.fetch(workerReq, {});
+  assert.equal(workerRes.status, 200);
+  const workerData = (await workerRes.json()) as any;
+  assert.equal(workerData.status, 'pass');
+  assert.equal(workerData.service, 'traveling-api-gateway');
+  assert.ok(workerData.checks.aiEngine.activeProviders.length > 0);
+
+  // Worker rejects POST on /api/health
+  const badMethodReq = new Request('https://traveling.vn/api/health', { method: 'POST' });
+  const badMethodRes = await worker.fetch(badMethodReq, {});
+  assert.equal(badMethodRes.status, 405);
+});
+

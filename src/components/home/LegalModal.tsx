@@ -1,8 +1,8 @@
 import { useDialog } from '../../hooks/useDialog';
-﻿import React, { useState, useEffect } from 'react';
-import { X, Shield, FileText, Cpu, PhoneCall } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Shield, FileText, Cpu, PhoneCall, Building2 } from 'lucide-react';
 
-export type LegalTab = 'terms' | 'privacy' | 'responsible-ai' | 'sos';
+export type LegalTab = 'terms' | 'privacy' | 'responsible-ai' | 'enterprise' | 'sos';
 
 interface LegalModalProps {
   isOpen: boolean;
@@ -98,7 +98,21 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>Chính Sách Bảo Mật</span>
+            <span>Bảo Vệ Dữ Liệu (NĐ 13)</span>
+          </button>
+
+          <button
+            role="tab"
+            aria-selected={activeTab === 'enterprise'}
+            onClick={() => setActiveTab('enterprise')}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              activeTab === 'enterprise'
+                ? 'bg-primary text-slate-950 shadow-sm'
+                : 'bg-surface-light text-slate-300 hover:text-white'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>Pháp Nhân Doanh Nghiệp</span>
           </button>
 
           <button
@@ -151,17 +165,64 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 
           {activeTab === 'privacy' && (
             <div className="space-y-4">
-              <h4 className="text-sm font-bold text-white">1. Nguyên Tắc Bảo Vệ Quyền Riêng Tư</h4>
+              <h4 className="text-sm font-bold text-white">1. Tuân Thủ Nghị Định 13/2023/NĐ-CP (PDPD)</h4>
               <p>
-                Traveling cam kết tuyệt đối không bán, chia sẻ hoặc thương mại hóa dữ liệu cá nhân của người dùng cho bên thứ ba vì bất kỳ mục đích quảng cáo nào.
+                Traveling cam kết bảo vệ dữ liệu cá nhân theo đúng quy định tại Nghị định 13/2023/NĐ-CP của Chính phủ. Chúng tôi chỉ thu thập và xử lý dữ liệu (họ tên, email, ảnh thực đơn, vị trí địa lý) khi nhận được sự đồng ý tường minh (Explicit Consent) của du khách.
               </p>
-              <h4 className="text-sm font-bold text-white">2. Lưu Trữ & Mã Hóa</h4>
+              <h4 className="text-sm font-bold text-white">2. Quyền Của Chủ Thể Dữ Liệu</h4>
               <p>
-                Thông tin đăng nhập và danh tính được quản lý theo tiêu chuẩn an toàn bảo mật qua Clerk Auth. Lịch trình cá nhân và dữ liệu tính toán chi phí nhóm được lưu trữ mã hóa và có khả năng hoạt động ngoại tuyến an toàn trên thiết bị của bạn.
+                Theo quy định của pháp luật Việt Nam, bạn có đầy đủ các quyền: Quyền được biết thông tin xử lý; Quyền đồng ý hoặc không đồng ý; Quyền truy cập và yêu cầu chỉnh sửa; Quyền rút lại sự đồng ý; Quyền yêu cầu xóa vĩnh viễn dữ liệu (Right to be forgotten); và Quyền khiếu nại bồi thường thiệt hại.
               </p>
-              <h4 className="text-sm font-bold text-white">3. Quyền Kiểm Soát Dữ Liệu</h4>
+              <h4 className="text-sm font-bold text-white">3. Lưu Trữ An Toàn & Kiến Trúc Local-First</h4>
               <p>
-                Người dùng có toàn quyền yêu cầu xuất bản sao dữ liệu lịch trình hoặc xóa vĩnh viễn tài khoản và toàn bộ lịch sử sử dụng bất cứ lúc nào thông qua cài đặt ứng dụng.
+                Dữ liệu lịch trình và sổ quỹ chia tiền nhóm được lưu trữ mã hóa cục bộ trên thiết bị của bạn. Thông tin danh tính được quản lý an toàn qua Clerk Auth tiêu chuẩn ISO 27001 và SOC2 Type II. Chúng tôi cam kết tuyệt đối không bán dữ liệu cá nhân của người dùng cho bên thứ ba.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'enterprise' && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold text-white">1. Thông Tin Pháp Nhân Doanh Nghiệp</h4>
+              <div className="p-3.5 rounded-xl bg-surface-light border border-border-subtle space-y-2">
+                <div>
+                  <span className="text-slate-400">Tên doanh nghiệp: </span>
+                  <strong className="text-white">CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ DU LỊCH TRAVELING VIỆT NAM</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400">Tên giao dịch quốc tế: </span>
+                  <span className="text-slate-200">TRAVELING VIETNAM TECHNOLOGY AND TRAVEL JSC</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Mã số doanh nghiệp / Mã số thuế: </span>
+                  <span className="text-primary font-mono font-bold">0110892639</span>
+                  <span className="text-slate-400 text-[11px]"> (Cấp bởi Sở Kế hoạch và Đầu tư TP. Hà Nội)</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Người đại diện theo pháp luật: </span>
+                  <span className="text-white">Ban Giám Đốc Điều Hành Traveling</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Trụ sở chính: </span>
+                  <span className="text-slate-200">Tầng 8, Tòa nhà Công nghệ Sáng tạo, Đường Cầu Giấy, Q. Cầu Giấy, TP. Hà Nội</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Chi nhánh miền Nam: </span>
+                  <span className="text-slate-200">Tầng 6, Innovation Hub, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Hotline tổng đài 24/7: </span>
+                  <span className="text-primary font-mono font-bold">1900 6868</span>
+                  <span className="text-slate-400"> | Email: </span>
+                  <span className="text-slate-200">khanhdevs@gmail.com</span>
+                </div>
+              </div>
+
+              <h4 className="text-sm font-bold text-white">2. Đăng Ký Thương Mại Điện Tử & Giấy Phép</h4>
+              <p>
+                Website và ứng dụng Traveling đã hoàn tất thủ tục khai báo và thông báo website thương mại điện tử với Bộ Công Thương theo Nghị định 52/2013/NĐ-CP và Nghị định 85/2021/NĐ-CP.
+              </p>
+              <p>
+                Hoạt động đại lý du lịch và tích hợp thanh toán được thực hiện theo đúng Luật Du lịch 2017 và quy định của Ngân hàng Nhà nước Việt Nam về trung gian thanh toán và chuyển khoản nhanh Napas 247.
               </p>
             </div>
           )}
